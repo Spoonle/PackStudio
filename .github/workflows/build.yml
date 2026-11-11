@@ -39,7 +39,7 @@ jobs:
           EXIT_CODE=$?
           cat gradle-build.log
           if [ $EXIT_CODE -ne 0 ]; then
-            SUMMARY=$(grep -E "error:|FAILED|Exception|Caused by:|What went wrong|> " gradle-build.log | tail -n 35 | tr '\n' '|' | cut -c1-3500)
+            SUMMARY=$(grep -E -A 3 "error:|FAILED|Exception|Caused by:|What went wrong" gradle-build.log | tail -n 60 | tr '\n' '|' | cut -c1-3500)
             echo "::error title=GradleBuildFailed::$SUMMARY"
             exit $EXIT_CODE
           fi
