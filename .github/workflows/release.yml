@@ -1,0 +1,38 @@
+name: Publish Release Assets
+
+on:
+  push:
+    branches:
+      - main
+      - "arena/**"
+    paths:
+      - "releases/**"
+      - ".github/workflows/release.yml"
+  release:
+    types: [published, created]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  attach-assets:
+    name: Attach JARs to GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload JAR & Checksum Assets to Release v1.0.0+mc26.3
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v1.0.0+mc26.3"
+          gh release upload "$TAG" \
+            "releases/packstudio-1.0.0+mc26.3.jar#packstudio-1.0.0+mc26.3.jar" \
+            "releases/packstudio-1.0.0+mc26.3-sources.jar#packstudio-1.0.0+mc26.3-sources.jar" \
+            "releases/SHA256SUMS.txt#SHA256SUMS.txt" \
+            --clobber
+          gh release edit "$TAG" \
+            --target main \
+            --notes-file releases/RELEASE_NOTES.md

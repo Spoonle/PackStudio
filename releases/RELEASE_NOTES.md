@@ -6,21 +6,11 @@ First stable release of **PackStudio** for **Minecraft Java Edition `26.3` (Fabr
 
 ---
 
-## Direct Download
-
-- **[Download `packstudio-1.0.0+mc26.3.jar` (148 KB — Client Mod JAR for Minecraft 26.3 Fabric)](https://github.com/Spoonle/PackStudio/raw/v1.0.0%2Bmc26.3/releases/packstudio-1.0.0%2Bmc26.3.jar)**
-  - **SHA-256**: `58fd11ccb81b7d2fb3463ca29267acd45eb9141532a40bc43f4d0b2676442332`
-- **[Download `packstudio-1.0.0+mc26.3-sources.jar` (77 KB — Developer Sources JAR)](https://github.com/Spoonle/PackStudio/raw/main/releases/packstudio-1.0.0%2Bmc26.3-sources.jar)**
-  - **SHA-256**: `59bf595dc6f66fd356ceae0d82a585c8a63316f71af210a3cfa8ac624081a019`
-- **[View `SHA256SUMS.txt`](https://github.com/Spoonle/PackStudio/raw/main/releases/SHA256SUMS.txt)**
-
----
-
 ## Quick Installation
 
 1. Install **Minecraft Java Edition `26.3`** with **[Fabric Loader `0.20.1+`](https://fabricmc.net/use/installer/)** (running on **Java `25`**).
 2. Download **[Fabric API](https://modrinth.com/mod/fabric-api)** (`0.165.2+26.3` or newer) and place it in your `.minecraft/mods/` folder.
-3. Download **[`packstudio-1.0.0+mc26.3.jar`](https://github.com/Spoonle/PackStudio/raw/v1.0.0%2Bmc26.3/releases/packstudio-1.0.0%2Bmc26.3.jar)** and drop it into `.minecraft/mods/`.
+3. Scroll down to **Assets**, download **`packstudio-1.0.0+mc26.3.jar`**, and drop it into `.minecraft/mods/`.
 4. Launch Minecraft and press **`P`** — or click **`PackStudio`** in the top-right corner of the **Title Screen**, **Options Screen**, or **Resource Packs Screen**.
 
 > **100% Client-Side**: Works on singleplayer worlds and any multiplayer server (vanilla, Fabric, Paper, Velocity) without server installation.
@@ -43,15 +33,15 @@ First stable release of **PackStudio** for **Minecraft Java Edition `26.3` (Fabr
 
 | Resource Pack Library (Grid — *Obsidian Cyan*) | Resource Pack Library (List — *Frosted Emerald*) |
 | :---: | :---: |
-| ![Library Grid](https://raw.githubusercontent.com/Spoonle/PackStudio/v1.0.0%2Bmc26.3/docs/screenshots/01-library-grid-obsidian.png) | ![Library List](https://raw.githubusercontent.com/Spoonle/PackStudio/v1.0.0%2Bmc26.3/docs/screenshots/02-library-list-emerald.png) |
+| ![Library Grid](https://raw.githubusercontent.com/Spoonle/PackStudio/main/docs/screenshots/01-library-grid-obsidian.png) | ![Library List](https://raw.githubusercontent.com/Spoonle/PackStudio/main/docs/screenshots/02-library-list-emerald.png) |
 
 | Overview & One-Click Presets | Profile Manager & Missing-Pack Diagnostics |
 | :---: | :---: |
-| ![Overview](https://raw.githubusercontent.com/Spoonle/PackStudio/v1.0.0%2Bmc26.3/docs/screenshots/03-overview-dashboard.png) | ![Profiles](https://raw.githubusercontent.com/Spoonle/PackStudio/v1.0.0%2Bmc26.3/docs/screenshots/04-profile-manager.png) |
+| ![Overview](https://raw.githubusercontent.com/Spoonle/PackStudio/main/docs/screenshots/03-overview-dashboard.png) | ![Profiles](https://raw.githubusercontent.com/Spoonle/PackStudio/main/docs/screenshots/04-profile-manager.png) |
 
 | Persistent Settings & Shortcuts (*Midnight Indigo*) |
 | :---: |
-| ![Settings](https://raw.githubusercontent.com/Spoonle/PackStudio/v1.0.0%2Bmc26.3/docs/screenshots/05-settings-indigo.png) |
+| ![Settings](https://raw.githubusercontent.com/Spoonle/PackStudio/main/docs/screenshots/05-settings-indigo.png) |
 
 ---
 
@@ -79,3 +69,13 @@ First stable release of **PackStudio** for **Minecraft Java Edition `26.3` (Fabr
 - **`P`** — Open PackStudio
 - **`O`** — Quick-Switch to next saved preset (with native toast feedback)
 - **`↑` / `↓` / `Space` / `Esc`** — Keyboard library navigation & unsaved-changes guard
+
+---
+
+## Attached Assets & Checksums (`SHA-256`)
+
+- **`packstudio-1.0.0+mc26.3.jar`** — **Playable Client Mod JAR** *(drop into `.minecraft/mods/`)*
+  - `58fd11ccb81b7d2fb3463ca29267acd45eb9141532a40bc43f4d0b2676442332`
+- **`packstudio-1.0.0+mc26.3-sources.jar`** — Developer Java 25 sources archive
+  - `59bf595dc6f66fd356ceae0d82a585c8a63316f71af210a3cfa8ac624081a019`
+- **`SHA256SUMS.txt`** — Checksum manifest
