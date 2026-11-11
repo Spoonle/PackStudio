@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.packstudio.client.PackStudioClient;
 import com.packstudio.client.screen.PackStudioScreen;
 import com.packstudio.core.PackStudioBootstrap;
+import com.packstudio.core.PackStudioExecutors;
 import com.packstudio.manager.ConfigManager;
 import com.packstudio.model.LiquidThemePreset;
 import com.packstudio.model.PackStudioConfig;
@@ -12,6 +13,8 @@ import com.packstudio.model.ViewMode;
 import com.packstudio.storage.JsonStorage;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.Minecraft;
@@ -65,6 +68,24 @@ class FoundationMilestoneTest {
         assertEquals("PvP_Pack_1.0", JsonStorage.sanitizeFileStem("PvP Pack 1.0"));
         assertFalse(JsonStorage.sanitizeFileStem("../../etc/passwd").contains(".."));
         assertFalse(JsonStorage.sanitizeFileStem("../../etc/passwd").contains("/"));
+    }
+
+    @Test
+    void managedIoExecutorRunsOffCallerThreadOnDaemonWorker() throws Exception {
+        long callerId = Thread.currentThread().threadId();
+        record WorkerInfo(long threadId, String name, boolean daemon) {
+        }
+        WorkerInfo info = CompletableFuture.supplyAsync(
+                () -> {
+                    Thread current = Thread.currentThread();
+                    return new WorkerInfo(current.threadId(), current.getName(), current.isDaemon());
+                },
+                PackStudioExecutors.ioExecutor()
+        ).get(5, TimeUnit.SECONDS);
+
+        assertNotEquals(callerId, info.threadId(), "I/O executor must run off the caller/client thread");
+        assertTrue(info.name().startsWith("PackStudio-IO-"), "Worker thread must use PackStudio-IO naming");
+        assertTrue(info.daemon(), "Worker thread must be daemon so it never blocks JVM exit");
     }
 
     @Test

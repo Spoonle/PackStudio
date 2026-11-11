@@ -7,6 +7,7 @@ import com.packstudio.core.PackStudioConstants;
 import com.packstudio.model.PackStudioConfig;
 import java.util.List;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -40,6 +41,10 @@ public final class PackStudioClient implements ClientModInitializer {
             registerKeyMappings(bootstrap.configManager().config());
             registerTickHandlers();
             registerScreenEntryButtons(bootstrap);
+            ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> {
+                bootstrap.iconCache().invalidateAll();
+                bootstrap.configManager().save();
+            });
             initialized = true;
         }
     }

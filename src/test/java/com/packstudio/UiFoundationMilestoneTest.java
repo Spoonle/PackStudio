@@ -93,9 +93,9 @@ class UiFoundationMilestoneTest {
                 () -> {}
         );
         modal.layout(client.font, 640, 360);
-        modal.charTyped(new CharacterEvent('P', 0));
-        modal.charTyped(new CharacterEvent('v', 0));
-        modal.charTyped(new CharacterEvent('P', 0));
+        modal.charTyped(new CharacterEvent('P'));
+        modal.charTyped(new CharacterEvent('v'));
+        modal.charTyped(new CharacterEvent('P'));
         modal.render(graphics, client.font, 640, 360, 320, 180, 0.16F);
         modal.keyPressed(new KeyEvent(com.mojang.blaze3d.platform.InputConstants.KEY_RETURN, 0, 0));
         assertEquals("PvP", submitted.get());

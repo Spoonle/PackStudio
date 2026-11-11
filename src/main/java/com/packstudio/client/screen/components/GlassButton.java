@@ -9,7 +9,6 @@ import com.packstudio.util.TextFormatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
@@ -29,7 +28,7 @@ public final class GlassButton extends Button {
     private float hoverAnim = 0.0F;
 
     public GlassButton(int x, int y, int width, int height, Component message, Variant variant, OnPress onPress) {
-        super(x, y, width, height, message, onPress);
+        super(x, y, width, height, message, onPress, Button.DEFAULT_NARRATION);
         this.variant = variant == null ? Variant.SECONDARY : variant;
     }
 
@@ -43,15 +42,7 @@ public final class GlassButton extends Button {
     }
 
     @Override
-    public void onPress() {
-        if (this.active && this.visible) {
-            AbstractWidget.playButtonClickSound(Minecraft.getInstance().getSoundManager());
-            super.onPress();
-        }
-    }
-
-    @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         PackStudioConfig cfg = PackStudioBootstrap.get().configManager().config();
         LiquidThemePreset theme = cfg.theme();
 

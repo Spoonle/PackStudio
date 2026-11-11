@@ -12,7 +12,6 @@ import java.util.function.IntSupplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 
 /**
@@ -34,7 +33,7 @@ public final class GlassTabButton extends Button {
             IntSupplier badgeSupplier,
             Consumer<NavigationTab> onSelect
     ) {
-        super(x, y, width, height, tab.displayName(), _ -> onSelect.accept(tab));
+        super(x, y, width, height, tab.displayName(), _ -> onSelect.accept(tab), Button.DEFAULT_NARRATION);
         this.tab = tab;
         this.activeTab = activeTab;
         this.badgeSupplier = badgeSupplier;
@@ -49,15 +48,7 @@ public final class GlassTabButton extends Button {
     }
 
     @Override
-    public void onPress() {
-        if (this.active && this.visible) {
-            AbstractWidget.playButtonClickSound(Minecraft.getInstance().getSoundManager());
-            super.onPress();
-        }
-    }
-
-    @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         PackStudioConfig cfg = PackStudioBootstrap.get().configManager().config();
         LiquidThemePreset theme = cfg.theme();
 
