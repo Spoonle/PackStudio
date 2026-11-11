@@ -3,6 +3,7 @@ package com.packstudio.manager;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.packstudio.core.PackStudioConstants;
+import com.packstudio.core.PackStudioExecutors;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -16,12 +17,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
-import net.minecraft.util.Util;
 
 /**
  * Asynchronous pack icon loader and GPU texture cache backed by Minecraft's {@link TextureManager}.
- * Decodes PNG bytes on {@link Util#backgroundExecutor()} and registers {@link DynamicTexture}s strictly
- * on the Minecraft client thread.
+ * Decodes PNG bytes on {@link PackStudioExecutors#ioExecutor()} and registers {@link DynamicTexture}s
+ * strictly on the Minecraft client thread.
  */
 public final class PackIconCache {
     public static final Identifier FALLBACK_ICON =
@@ -44,7 +44,7 @@ public final class PackIconCache {
 
         if (loadingIds.add(packId)) {
             Minecraft client = Minecraft.getInstance();
-            CompletableFuture.supplyAsync(() -> decodePackPng(pack), Util.backgroundExecutor())
+            CompletableFuture.supplyAsync(() -> decodePackPng(pack), PackStudioExecutors.ioExecutor())
                     .thenAcceptAsync(nativeImage -> {
                         try {
                             if (nativeImage != null && client != null && client.getTextureManager() != null) {

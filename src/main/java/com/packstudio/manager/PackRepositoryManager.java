@@ -3,6 +3,7 @@ package com.packstudio.manager;
 import com.packstudio.compatibility.PackMetadataInspector;
 import com.packstudio.compatibility.PackMetadataInspector.InspectedMetadata;
 import com.packstudio.core.PackStudioConstants;
+import com.packstudio.core.PackStudioExecutors;
 import com.packstudio.model.FilterMode;
 import com.packstudio.model.PackCompatibilityStatus;
 import com.packstudio.model.PackEntry;
@@ -27,7 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
-import net.minecraft.util.Util;
 
 /**
  * Coordinates real resource pack discovery against Minecraft's {@link PackRepository}, stages pending
@@ -58,7 +58,7 @@ public final class PackRepositoryManager {
 
     /**
      * Scans Minecraft's {@link PackRepository} on the client thread and schedules non-blocking
-     * {@code pack.mcmeta} enrichment on {@link Util#backgroundExecutor()}.
+     * {@code pack.mcmeta} enrichment on {@link PackStudioExecutors#ioExecutor()}.
      */
     public synchronized void refreshFromRepository(boolean preserveStagedEdits) {
         Minecraft client = Minecraft.getInstance();
@@ -118,7 +118,7 @@ public final class PackRepositoryManager {
                         _ -> PackMetadataInspector.inspect(pack, resourcePacksDir)
                 );
             }
-        }, Util.backgroundExecutor());
+        }, PackStudioExecutors.ioExecutor());
     }
 
     /**
