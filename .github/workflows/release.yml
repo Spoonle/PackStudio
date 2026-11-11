@@ -1,0 +1,35 @@
+name: Publish Release Assets
+
+on:
+  release:
+    types: [published, created]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach JAR assets to"
+        required: true
+        default: "v1.0.0+mc26.3"
+
+permissions:
+  contents: write
+
+jobs:
+  attach-assets:
+    name: Attach JARs to GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload JAR & Checksum Assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          TAG="${EVENT_TAG:-${INPUT_TAG:-v1.0.0+mc26.3}}"
+          gh release upload "$TAG" \
+            "releases/packstudio-1.0.0+mc26.3.jar#packstudio-1.0.0+mc26.3.jar" \
+            "releases/packstudio-1.0.0+mc26.3-sources.jar#packstudio-1.0.0+mc26.3-sources.jar" \
+            "releases/SHA256SUMS.txt#SHA256SUMS.txt" \
+            --clobber
