@@ -4,6 +4,36 @@ All notable changes to **PackStudio** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0+mc26.x] - 2026-11-13
+
+### Added
+- **Minecraft 26.1, 26.1.1, 26.1.2 and 26.2 support** alongside the existing 26.3 release, as four additional
+  independent distribution JARs (`releases/<version>/PackStudio-<version>.jar`).
+- **Multi-version build**: `-Pminecraft_version=<version>` selects the Minecraft version, the official Fabric
+  Loader / Fabric API versions, the API compatibility layer and the `fabric.mod.json` dependency range.
+- **`com.packstudio.compat` compatibility layer** with one implementation per Minecraft API family, so the shared
+  codebase no longer references version-specific APIs.
+- **Per-target verification in CI**: compilation, the full JUnit 5 suite, target-identity assertions and a jar
+  metadata audit (`tools/verify_release_jar.sh`) run for every supported Minecraft version.
+
+### Changed
+- Version-dependent Minecraft APIs are now isolated behind `MinecraftCompat`:
+  - client screen access (`Minecraft.screen`/`setScreen` before 26.2, `Minecraft.gui` from 26.2),
+  - resource-pack metadata (`Pack.open()` → `PackResources` before 26.3, `Pack.openMetadata()` on 26.3),
+  - keyboard bindings (`InputConstants.Type.KEYSYM` before 26.3, `KEYBOARD` on 26.3),
+  - directory opening (`Util.getPlatform().openUri` before 26.3, `Blaze3D.openPath` on 26.3).
+- The search field paints its Liquid Glass shell from the screen background pass, so the UI no longer depends on
+  which per-widget render hook a given Minecraft version exposes.
+- Version strings shown in the UI (compatibility badge, overview health line) now come from Fabric Loader instead
+  of a hardcoded `26.3`.
+- `fabric.mod.json` is a single template; each target expands its own exact Minecraft range and Fabric API lower
+  bound.
+
+### Unchanged
+- **Minecraft 26.3 remains the default target** with the same Minecraft, Fabric Loader (`0.20.1`), Fabric API
+  (`0.165.2+26.3`), Loom (`1.19-SNAPSHOT`) and Java 25 toolchain, the same `~26.3` dependency predicate and the
+  same artifact naming. No feature was removed to reach the older versions.
+
 ## [1.0.0+mc26.3] - 2026-11-11
 
 ### Added

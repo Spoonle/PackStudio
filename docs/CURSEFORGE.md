@@ -2,7 +2,25 @@
 
 **Your resource packs. Your presets. Your world.**
 
-**PackStudio** upgrades resource pack management in **Minecraft Java Edition 26.3 (Fabric)** with a sleek, responsive **Liquid Glass** workspace built natively inside the game client. Browse large pack collections effortlessly, save custom ordered presets, and swap your entire visual setup in one click.
+**PackStudio** upgrades resource pack management in **Minecraft Java Edition 26.1 – 26.3 (Fabric)** with a sleek, responsive **Liquid Glass** workspace built natively inside the game client. Browse large pack collections effortlessly, save custom ordered presets, and swap your entire visual setup in one click.
+
+
+### Supported Minecraft Versions
+
+PackStudio is published as **independent release files**, one per Minecraft version. Download only the file that
+matches your game, together with the official Fabric API build for that same version.
+
+| Minecraft | PackStudio file | Fabric API |
+| :--- | :--- | :--- |
+| `26.1` | `PackStudio-26.1.jar` | `0.155.3+26.1.2` |
+| `26.1.1` | `PackStudio-26.1.1.jar` | `0.155.3+26.1.2` |
+| `26.1.2` | `PackStudio-26.1.2.jar` | `0.155.3+26.1.2` |
+| `26.2` | `PackStudio-26.2.jar` | `0.161.0+26.2` |
+| `26.3` | `PackStudio-26.3.jar` | `0.165.2+26.3` |
+
+All five require **Fabric Loader `0.20.1+`** and **Java 25**. Each file declares an exact Minecraft dependency
+range, so a mismatched install fails immediately instead of misbehaving.
+
 
 ---
 
@@ -26,7 +44,7 @@
 4. **Lightweight Liquid Glass Aesthetic**
    - Three dark translucent themes: **Obsidian Cyan**, **Midnight Indigo**, and **Frosted Emerald**.
    - Configurable UI transparency, default Grid/List view, smooth transition toggle, and SDL3 shortcut rebinding.
-   - **Zero Mixins & Zero Blur Shaders** — engineered on public 26.3 APIs for maximum stability alongside Sodium and other client mods.
+   - **Zero Mixins & Zero Blur Shaders** — engineered on public Minecraft and Fabric APIs for maximum stability alongside Sodium and other client mods.
 
 ---
 

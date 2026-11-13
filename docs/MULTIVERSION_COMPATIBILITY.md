@@ -92,18 +92,23 @@ src/main/families/26.1/java/…/MinecraftCompatImpl.java   pre-26.2 GUI API + Pa
 src/main/families/26.2/java/…/MinecraftCompatImpl.java   client.gui API + PackResources metadata
 src/main/families/26.3/java/…/MinecraftCompatImpl.java   client.gui API + openMetadata() (byte-for-byte
                                                         equivalent behaviour to the original code)
-src/main/versions/<exact version>/resources/fabric.mod.json   per-target metadata (version bounds)
-src/main/resources/                   shared assets + the unchanged 26.3 fabric.mod.json
+src/main/resources/                   shared assets + one templated fabric.mod.json
 ```
 
 - One shared codebase. Exactly one small interface (`MinecraftCompat`) has per-family
-  implementations, chosen at build time by `minecraft_family` in `gradle.properties`.
-- `minecraft_version` selects the source set, the dependency versions, the `fabric.mod.json`
-  template and the output jar name; `minecraft_family` selects the compatibility implementation.
+  implementations, chosen at build time by the target table in `build.gradle`.
+- `-Pminecraft_version=<version>` (default `26.3`) looks the version up in the `minecraftTargets` table, which
+  supplies the API family, the official Loader/Fabric API versions, the `fabric.mod.json` Minecraft range, the
+  Fabric API lower bound and the output jar name. Because the table is the single source of truth, a jar cannot
+  be built with another version's dependencies.
+- `fabric.mod.json` is one shared template: `processResources` expands `version`, `minecraft_version`,
+  `loader_version`, `minecraft_range` and `fabric_api_range` for the selected target, so no target can end up
+  with a missing or duplicated mod metadata file.
 - Nothing is version-guarded at runtime: each jar contains exactly one implementation, so a jar
   cannot silently fall back to another version's API.
-- **The 26.3 build keeps its original plugin id, loader, Loom, Fabric API versions, Java level,
-  artifact name and `fabric.mod.json` template.** Adding a target never touches the 26.3 numbers.
+- **The 26.3 build keeps its original plugin id, loader, Loom, Fabric API versions, Java level
+  and artifact name.** Adding a target never touches the 26.3 numbers: its entry in the target table is the
+  original `~26.3` / `fabric-api: "*"` pair.
 
 Per-target dependency metadata (`fabric.mod.json` `depends`):
 
@@ -118,20 +123,61 @@ Per-target dependency metadata (`fabric.mod.json` `depends`):
 These are exact-version predicates, so each jar refuses to load on the wrong game version instead of
 pretending compatibility.
 
-## 4. Verification
+## 4. Verification (as implemented)
 
-Per target, in CI (JDK 25 + Gradle 9.8.2 + Fabric Loom):
+Per target, in CI (JDK 25 + Gradle `9.8.2` + Fabric Loom `1.19-SNAPSHOT`), five matrix jobs run in
+parallel — one per Minecraft version:
 
-1. `./gradlew clean build -Pminecraft_version=…` → dependency resolution, compile, `fabric.mod.json`
-   expansion.
-2. JUnit 5 suite (`./gradlew test`), shared across all targets, so feature tests run once per target.
-3. `targetSmokeTest` (JavaExec, part of `check`): loads the compiled mod classes against that
-   target's real Minecraft jar and asserts the expected Minecraft version and API family, which
-   proves the classes were compiled against the right game and that the right compat implementation
-   is on the classpath.
-4. Jar metadata audit: `fabric.mod.json` inside the jar, jar file name, dependency versions.
-5. `collectVersionedReleases` copies the verified jar to `releases/<version>/PackStudio-<version>.jar`.
+1. `./gradlew clean build -Pminecraft_version=…` → dependency resolution against that version's official
+   Minecraft, Fabric Loader and Fabric API; compilation of the shared sources plus that family's compatibility
+   implementation; `fabric.mod.json` expansion.
+2. JUnit 5 suite, shared across all targets, so every feature test runs once per target:
+   profile persistence + corruption quarantine, real ZIP/folder pack discovery, `pack.mcmeta` + `pack.png`
+   handling, search/filter/sort, priority ordering, profile CRUD, import/export, transactional apply with
+   rollback, adaptive layout and keyboard navigation.
+3. `TargetIdentityTest` — asserts at runtime that the compiled classes correspond to the declared Minecraft
+   version and that the expected compatibility implementation is on the classpath.
+4. `JarMetadataTest` — asserts the packaged `fabric.mod.json`: version suffix `+mc<target>`, Minecraft range
+   covering the target, client-only environment, Java ≥ 25, real Fabric API bound and the client entrypoint.
+5. `tools/verify_release_jar.sh <jar> <mc> <family>` — independent shell audit of the same properties plus the
+   build-identity resource and bundled translations. It fails the job with an `::error` annotation naming the
+   reason.
+6. The sync job rebuilds each target, re-audits the staged file, writes
+   `releases/<version>/PackStudio-<version>.jar` + `-sources.jar` + `SHA256SUMS.txt` and commits them.
 
-Anything that needs a real client (GL context, window, audio, actual resource reload of a running
-game) cannot be executed headlessly; those checks are listed explicitly in
-`docs/BUILD_AND_INSTALL.md` and are not claimed as passed.
+Current status: **all five targets pass steps 1–6** (run of 2026-11-13).
+
+### Verification matrix (what is and is not proven)
+
+| Check | Verified headlessly | Needs a real client |
+| :--- | :--- | :--- |
+| Compiles against the target's real Minecraft + Fabric API | ✅ every target | — |
+| Feature behaviour (profiles, packs, search, ordering, imports) | ✅ every target | — |
+| Packaged metadata, dependency ranges, entrypoint | ✅ every target | — |
+| Runtime target identity / correct compat layer | ✅ every target | — |
+| GUI rendering, texture upload, scaling | ⚠️ smoke-level only | ✅ GPU |
+| Resource-pack reload of a running game | ⚠️ rollback logic only | ✅ reload |
+| Keyboard shortcuts (SDL capture, Controls screen) | ⚠️ key mapping creation only | ✅ input |
+| OS folder dialogs / native toasts | ❌ | ✅ |
+
+The `⚠️` rows exercise the underlying logic and API calls, but the visible/interactive result can only be
+confirmed in a real Minecraft client. They are listed as manual smoke tests in `releases/RELEASE_NOTES_26X.md`
+and are **not** claimed as verified.
+
+## 5. Release packaging
+
+Each target produces its own independent file; there is no universal JAR and no release carries two Minecraft
+versions:
+
+```
+releases/26.1/PackStudio-26.1.jar          + -sources.jar + SHA256SUMS.txt + CHANGELOG.md
+releases/26.1.1/PackStudio-26.1.1.jar      …
+releases/26.1.2/PackStudio-26.1.2.jar      …
+releases/26.2/PackStudio-26.2.jar          …
+releases/26.3/PackStudio-26.3.jar          …
+```
+
+`.github/workflows/release.yml` publishes one of these per run: it derives the Minecraft version from the
+release tag (`v1.0.0+mc26.2` → `26.2`) or takes it as a dispatch input, builds only that target, audits it and
+attaches only that target's files to the corresponding GitHub Release. Each of those releases maps one-to-one
+to an independent CurseForge file.
