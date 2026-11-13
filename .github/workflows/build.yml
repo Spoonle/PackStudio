@@ -71,11 +71,19 @@ jobs:
 
       - name: Audit generated JAR metadata and target identity
         run: |
-          set -euo pipefail
-          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
-          echo "Auditing $MAIN_JAR"
+          set +e
           chmod +x tools/verify_release_jar.sh
-          tools/verify_release_jar.sh "$MAIN_JAR" "${{ matrix.minecraft }}" "${{ matrix.family }}"
+          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
+          {
+            echo "## Jar audit — Minecraft ${{ matrix.minecraft }}"
+            echo ""
+            echo '```'
+            echo "jar: $MAIN_JAR"
+            tools/verify_release_jar.sh "$MAIN_JAR" "${{ matrix.minecraft }}" "${{ matrix.family }}" 2>&1
+            echo "exit=$?"
+            echo '```'
+          } | tee "$GITHUB_STEP_SUMMARY" audit-output.txt
+          grep -F 'JAR AUDIT PASSED' audit-output.txt
 
       - name: Stage verified release file for this Minecraft version
         run: |
