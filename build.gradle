@@ -136,20 +136,6 @@ tasks.named('test', Test) {
 		events 'passed', 'skipped', 'failed'
 		exceptionFormat = 'full'
 	}
-	doLast {
-		def reports = layout.buildDirectory.dir('test-results/test').get().asFile
-		def suites = (reports.listFiles() ?: []).findAll { it.name.endsWith('.xml') }
-		def total = 0
-		def skipped = 0
-		def failed = 0
-		suites.each { file ->
-			def xml = new groovy.xml.XmlSlurper().parse(file)
-			total += (xml.@tests.text() as Integer)
-			skipped += (xml.@skipped.text() as Integer)
-			failed += (xml.@failures.text() as Integer) + (xml.@errors.text() as Integer)
-		}
-		println "Minecraft ${minecraftVersion} (family ${minecraftFamily}): ${total} tests, ${skipped} skipped, ${failed} failed"
-	}
 }
 
 java {
