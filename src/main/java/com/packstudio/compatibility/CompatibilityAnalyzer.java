@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.pack.PackFormat;
@@ -33,8 +34,19 @@ public final class CompatibilityAnalyzer {
             PackFormat fmt = SharedConstants.getCurrentVersion().packVersion(PackType.CLIENT_RESOURCES);
             return fmt.major() + "." + fmt.minor();
         } catch (Throwable ignored) {
-            return "26.3";
+            return currentGameVersion();
         }
+    }
+
+    /**
+     * The Minecraft version this jar is running on, taken from Fabric Loader so no release hardcodes a
+     * version it was not built for.
+     */
+    public static String currentGameVersion() {
+        return FabricLoader.getInstance()
+                .getModContainer("minecraft")
+                .map(container -> container.getMetadata().getVersion().getFriendlyString())
+                .orElse("unknown");
     }
 
     public static LibraryHealthReport analyzeLibrary(List<PackEntry> packs) {

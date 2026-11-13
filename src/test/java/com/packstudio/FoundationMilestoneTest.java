@@ -100,16 +100,16 @@ class FoundationMilestoneTest {
         assertNotNull(PackStudioBootstrap.get().configManager().config());
 
         TitleScreen titleScreen = new TitleScreen();
-        client.gui.setScreen(titleScreen);
+        TestClientAccess.setScreen(client, titleScreen);
         assertFalse(Screens.getWidgets(titleScreen).isEmpty(), "TitleScreen should receive PackStudio launch button");
 
         OptionsScreen optionsScreen = new OptionsScreen(titleScreen, client.options);
-        client.gui.setScreen(optionsScreen);
+        TestClientAccess.setScreen(client, optionsScreen);
         assertFalse(Screens.getWidgets(optionsScreen).isEmpty(), "OptionsScreen should receive PackStudio launch button");
 
         // Simulate keybind click opening PackStudioScreen
         TestHarnessBridge.simulateKeyMappingPress(PackStudioClient.openStudioMapping());
         ClientTickEvents.END_CLIENT_TICK.invoker().onEndTick(client);
-        assertInstanceOf(PackStudioScreen.class, client.gui.screen());
+        assertInstanceOf(PackStudioScreen.class, TestClientAccess.screen(client));
     }
 }

@@ -56,7 +56,7 @@ class FullUiAndSettingsMilestoneTest {
         TitleScreen parent = new TitleScreen();
         TestHarnessBridge.resizeWindow(client, 1708, 960, 2);
         PackStudioScreen screen = new PackStudioScreen(parent);
-        client.gui.setScreen(screen);
+        TestClientAccess.setScreen(client, screen);
 
         GuiGraphicsExtractor graphics = TestHarnessBridge.createGraphics(854, 480, 2);
 
@@ -74,7 +74,7 @@ class FullUiAndSettingsMilestoneTest {
 
         // Escape with unsaved changes opens confirmation modal instead of losing work immediately
         assertTrue(screen.keyPressed(new KeyEvent(InputConstants.KEY_ESCAPE, 0, 0)));
-        assertSame(screen, client.gui.screen(), "Screen must prompt before discarding unsaved changes");
+        assertSame(screen, TestClientAccess.screen(client), "Screen must prompt before discarding unsaved changes");
         screen.closeModal();
         bootstrap.packRepositoryManager().discardStagedChanges();
         screen.rebuildAndRefreshState();
@@ -95,7 +95,7 @@ class FullUiAndSettingsMilestoneTest {
 
         // Escape when clean returns to parent screen
         assertTrue(screen.keyPressed(new KeyEvent(InputConstants.KEY_ESCAPE, 0, 0)));
-        assertSame(parent, client.gui.screen());
+        assertSame(parent, TestClientAccess.screen(client));
     }
 
     private static void assertSame(Object expected, Object actual) {

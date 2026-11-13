@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.core.PackStudioConstants;
 import com.packstudio.model.PackSourceKind;
 import com.packstudio.util.TextFormatUtil;
@@ -15,9 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.resources.IoSupplier;
 
 /**
  * Reads genuine supplementary metadata from a pack's {@code pack.mcmeta} without ever fabricating
@@ -39,13 +38,11 @@ public final class PackMetadataInspector {
 
     public static InspectedMetadata inspect(Pack pack, Path resourcePacksDir) {
         PackSourceKind kind = resolveSourceKind(pack.getId(), resourcePacksDir);
-        try (PackMetadataResources metaResources = pack.openMetadata()) {
-            IoSupplier<InputStream> mcmetaSupplier = metaResources.getRootResource("pack.mcmeta");
-            if (mcmetaSupplier == null) {
+        try (InputStream mcmeta = MinecraftCompatProvider.get().openRootResource(pack, "pack.mcmeta")) {
+            if (mcmeta == null) {
                 return InspectedMetadata.empty(kind);
             }
-            try (InputStream in = mcmetaSupplier.get();
-                 InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+            try (InputStreamReader reader = new InputStreamReader(mcmeta, StandardCharsets.UTF_8)) {
                 JsonElement rootEl = JsonParser.parseReader(reader);
                 if (rootEl == null || !rootEl.isJsonObject()) {
                     return InspectedMetadata.empty(kind);

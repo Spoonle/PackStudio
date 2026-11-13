@@ -62,10 +62,13 @@ public final class PackRepositoryManager {
      */
     public synchronized void refreshFromRepository(boolean preserveStagedEdits) {
         Minecraft client = Minecraft.getInstance();
-        if (client == null || client.getResourcePackRepository() == null) {
+        if (client == null) {
             return;
         }
         PackRepository repository = client.getResourcePackRepository();
+        if (repository == null) {
+            return;
+        }
         boolean hadPendingChanges = preserveStagedEdits && hasUnsavedChanges();
         List<String> previousStaged = List.copyOf(stagedEnabledTopDown);
 
@@ -331,14 +334,17 @@ public final class PackRepositoryManager {
      */
     public CompletableFuture<Boolean> applyStagedChanges(Runnable onFinishedUiCallback) {
         Minecraft client = Minecraft.getInstance();
-        if (client == null || client.getResourcePackRepository() == null) {
+        if (client == null) {
+            return CompletableFuture.completedFuture(false);
+        }
+        PackRepository repository = client.getResourcePackRepository();
+        if (repository == null) {
             return CompletableFuture.completedFuture(false);
         }
         if (applyingReload) {
             return CompletableFuture.completedFuture(false);
         }
 
-        PackRepository repository = client.getResourcePackRepository();
         List<String> previousNativeBottomUp = List.copyOf(repository.getSelectedIds());
         List<String> previousCommittedTopDown;
         List<String> targetTopDown;

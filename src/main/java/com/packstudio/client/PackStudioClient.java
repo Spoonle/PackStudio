@@ -2,6 +2,7 @@ package com.packstudio.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.packstudio.client.screen.PackStudioScreen;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.core.PackStudioBootstrap;
 import com.packstudio.core.PackStudioConstants;
 import com.packstudio.model.PackStudioConfig;
@@ -24,7 +25,7 @@ import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.network.chat.Component;
 
 /**
- * Client-side Fabric entrypoint for PackStudio on Minecraft 26.3.
+ * Client-side Fabric entrypoint for PackStudio.
  * Registers SDL3-compatible {@link KeyMapping}s and non-intrusive screen launch buttons.
  */
 public final class PackStudioClient implements ClientModInitializer {
@@ -69,7 +70,7 @@ public final class PackStudioClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (openStudioMapping != null) {
                 while (openStudioMapping.consumeClick()) {
-                    openPackStudio(client, client.gui.screen());
+                    openPackStudio(client, MinecraftCompatProvider.get().currentScreen(client));
                 }
             }
             if (quickSwitchProfileMapping != null) {
@@ -105,18 +106,18 @@ public final class PackStudioClient implements ClientModInitializer {
     }
 
     public static void openPackStudio(Minecraft client, Screen parent) {
-        if (client == null || client.gui == null) {
+        if (client == null) {
             return;
         }
-        if (client.gui.screen() instanceof PackStudioScreen) {
+        if (MinecraftCompatProvider.get().currentScreen(client) instanceof PackStudioScreen) {
             return;
         }
-        client.gui.setScreen(new PackStudioScreen(parent));
+        MinecraftCompatProvider.get().setScreen(client, new PackStudioScreen(parent));
     }
 
     private static void onQuickSwitchRequested(Minecraft client) {
         if (client != null) {
-            boolean outsideStudio = !(client.gui.screen() instanceof PackStudioScreen);
+            boolean outsideStudio = !(MinecraftCompatProvider.get().currentScreen(client) instanceof PackStudioScreen);
             PackStudioBootstrap.get().profileApplier().cycleNextProfile(outsideStudio);
         }
     }

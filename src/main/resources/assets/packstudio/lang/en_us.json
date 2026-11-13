@@ -66,7 +66,8 @@
   "packstudio.overview.none_active": "Custom (Unlinked)",
   "packstudio.overview.quick_switch": "One-Click Profile Presets",
   "packstudio.overview.health_title": "Compatibility & Profile Diagnostics",
-  "packstudio.overview.health_ok": "All enabled packs and saved presets match Minecraft 26.3 cleanly.",
+  "packstudio.overview.health_ok": "All enabled packs and saved presets match Minecraft %s cleanly.",
+  "packstudio.overview.health_ok_versioned": "All enabled packs and saved presets match this Minecraft version cleanly.",
 
   "packstudio.profiles.title": "Resource Pack Presets",
   "packstudio.profiles.empty": "No saved profiles yet",

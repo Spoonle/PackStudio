@@ -1,4 +1,4 @@
-name: Build & Verify (Minecraft 26.3)
+name: Build & Verify (Minecraft 26.X)
 
 on:
   push:
@@ -12,10 +12,34 @@ permissions:
   contents: write
 
 jobs:
+  # ------------------------------------------------------------------------------------------------
+  # One independent build per supported Minecraft version. Each target resolves its own official
+  # Fabric versions, compiles the shared sources with its own compatibility layer, runs the JUnit
+  # suite, verifies target identity against the resolved Minecraft jar, and audits the jar metadata.
+  # ------------------------------------------------------------------------------------------------
   build:
-    name: Gradle Clean Build (JDK 25 / MC 26.3)
+    name: Minecraft ${{ matrix.minecraft }} (family ${{ matrix.family }})
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - minecraft: "26.1"
+            family: "26.1"
+            fabric_api: "0.155.3+26.1.2"
+          - minecraft: "26.1.1"
+            family: "26.1"
+            fabric_api: "0.155.3+26.1.2"
+          - minecraft: "26.1.2"
+            family: "26.1"
+            fabric_api: "0.155.3+26.1.2"
+          - minecraft: "26.2"
+            family: "26.2"
+            fabric_api: "0.161.0+26.2"
+          - minecraft: "26.3"
+            family: "26.3"
+            fabric_api: "0.165.2+26.3"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,61 +55,85 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run clean Fabric Loom build & JUnit 5 suite
-        id: gradle_build
+      - name: Run clean Fabric Loom build, JUnit 5 suite and target verification
         run: |
           set +e
-          ./gradlew clean build --no-daemon > gradle-build.log 2>&1
+          LOG="gradle-${{ matrix.minecraft }}.log"
+          ./gradlew clean build --no-daemon -Pminecraft_version=${{ matrix.minecraft }} > "$LOG" 2>&1
           EXIT_CODE=$?
-          cat gradle-build.log
+          cat "$LOG"
           if [ $EXIT_CODE -ne 0 ]; then
-            SUMMARY=$(grep -E -A 3 "error:|FAILED|Exception|Caused by:|What went wrong" gradle-build.log | tail -n 60 | tr '\n' '|' | cut -c1-3500)
-            echo "::error title=GradleBuildFailed::$SUMMARY"
+            SUMMARY=$(grep -E -A 3 "error:|FAILED|Exception|Caused by:|What went wrong" "$LOG" | tail -n 60 | tr '\n' '|' | cut -c1-3500)
+            echo "::error title=GradleBuildFailed(${{ matrix.minecraft }})::$SUMMARY"
             exit $EXIT_CODE
           fi
-          TAIL_OK=$(tail -n 20 gradle-build.log | tr '\n' '|' | cut -c1-2000)
-          echo "::notice title=GradleBuildSucceeded::$TAIL_OK"
 
-      - name: Verify JAR contents, fabric.mod.json, and 26.3 bytecode descriptors
+      - name: Audit generated JAR metadata and target identity
+        run: |
+          set -euo pipefail
+          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
+          echo "Auditing $MAIN_JAR"
+          chmod +x tools/verify_release_jar.sh
+          tools/verify_release_jar.sh "$MAIN_JAR" "${{ matrix.minecraft }}" "${{ matrix.family }}"
+
+      - name: Stage verified release file for this Minecraft version
         run: |
           set -euo pipefail
           MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
           SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar | head -n 1)
+          mkdir -p "releases/${{ matrix.minecraft }}"
+          cp "$MAIN_JAR" "releases/${{ matrix.minecraft }}/PackStudio-${{ matrix.minecraft }}.jar"
+          cp "$SOURCES_JAR" "releases/${{ matrix.minecraft }}/PackStudio-${{ matrix.minecraft }}-sources.jar"
+          (cd "releases/${{ matrix.minecraft }}" && sha256sum "PackStudio-${{ matrix.minecraft }}.jar" > SHA256SUMS.txt)
+          cat "releases/${{ matrix.minecraft }}/SHA256SUMS.txt"
 
-          if javap -cp "$MAIN_JAR" -c -v com.packstudio.manager.PackRepositoryManager | grep -q "backgroundExecutor"; then
-            echo "::error title=BytecodeAudit::PackRepositoryManager still references Util.backgroundExecutor"
-            exit 1
-          fi
-          if javap -cp "$MAIN_JAR" -c -v com.packstudio.manager.PackIconCache | grep -q "backgroundExecutor"; then
-            echo "::error title=BytecodeAudit::PackIconCache still references Util.backgroundExecutor"
-            exit 1
-          fi
+      - name: Upload per-version JARs
+        uses: actions/upload-artifact@v4
+        with:
+          name: packstudio-mc${{ matrix.minecraft }}
+          path: |
+            build/libs/packstudio-*.jar
+            releases/${{ matrix.minecraft }}/
 
-          (cd build/libs && sha256sum "$(basename "$MAIN_JAR")" "$(basename "$SOURCES_JAR")" > SHA256SUMS.txt)
-          SUMS=$(cat build/libs/SHA256SUMS.txt | tr '\n' '|')
-          MOD_JSON=$(unzip -p "$MAIN_JAR" fabric.mod.json | tr '\n' ' ' | tr -s ' ')
-          echo "::notice title=VerifiedArtifacts::SHA256=$SUMS | fabric.mod.json=$MOD_JSON"
+  # ------------------------------------------------------------------------------------------------
+  # Commits the verified per-version release files back onto the working branch.
+  # ------------------------------------------------------------------------------------------------
+  publish-branch-releases:
+    name: Sync verified per-version JARs to releases/
+    needs: build
+    if: startsWith(github.ref_name, 'arena/') && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Sync verified Loom JARs to releases/ on active working branch
-        if: startsWith(github.ref_name, 'arena/') && github.event_name == 'push'
+      - name: Download all verified version artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: packstudio-mc*
+          path: artifacts
+
+      - name: Assemble releases/<version>/ folders
         run: |
-          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
-          SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar | head -n 1)
-          cp "$MAIN_JAR" "releases/$(basename "$MAIN_JAR")"
-          cp "$SOURCES_JAR" "releases/$(basename "$SOURCES_JAR")"
-          cp build/libs/SHA256SUMS.txt releases/SHA256SUMS.txt
+          set -euo pipefail
+          mkdir -p releases
+          for version in 26.1 26.1.1 26.1.2 26.2 26.3; do
+            mkdir -p "releases/${version}"
+            cp "artifacts/packstudio-mc${version}/releases/${version}/"* "releases/${version}/"
+          done
+          ls -R releases | head -60
+
+      - name: Commit verified release files
+        run: |
+          set -euo pipefail
           if ! git diff --quiet releases/; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add releases/
-            git commit -m "chore(release): update prebuilt 26.3 JARs from verified Fabric Loom build [skip ci]"
+            git commit -m "chore(release): verified per-version JARs for MC 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 [skip ci]"
             git push origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            echo "No release file changes."
           fi
-
-      - name: Upload Built JARs
-        uses: actions/upload-artifact@v4
-        with:
-          name: packstudio-mc26.3-jars
-          path: |
-            build/libs/packstudio-*.jar
-            build/libs/SHA256SUMS.txt

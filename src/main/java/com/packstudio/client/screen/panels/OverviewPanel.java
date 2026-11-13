@@ -215,7 +215,7 @@ public final class OverviewPanel {
             graphics.fill(innerX + 2, cursorY + 4, innerX + 4, cursorY + 20, 0xFF34D399);
             graphics.text(
                     font,
-                    TextFormatUtil.ellipsize(font, I18n.get("packstudio.overview.health_ok"), innerW - 16),
+                    TextFormatUtil.ellipsize(font, healthOkMessage(), innerW - 16),
                     innerX + 10,
                     cursorY + 8,
                     0xFF6EE7B7,
@@ -270,5 +270,13 @@ public final class OverviewPanel {
         }
         scrollOffset = Math.max(0.0, scrollOffset - scrollY * 18.0);
         return true;
+    }
+
+    /** Version-aware healthy-library message; falls back cleanly when a translation lacks the placeholder. */
+    private static String healthOkMessage() {
+        String message = I18n.get("packstudio.overview.health_ok", CompatibilityAnalyzer.currentGameVersion());
+        return message.contains("%s")
+                ? I18n.get("packstudio.overview.health_ok_versioned")
+                : message;
     }
 }

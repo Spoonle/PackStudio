@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "packstudio",
+  "version": "${version}",
+  "name": "PackStudio",
+  "description": "A modern Liquid Glass resource pack and profile manager integrated directly into Minecraft. Your resource packs. Your presets. Your world.",
+  "authors": [
+    "Spoonle"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Spoonle/PackStudio",
+    "sources": "https://github.com/Spoonle/PackStudio",
+    "issues": "https://github.com/Spoonle/PackStudio/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/packstudio/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.packstudio.client.PackStudioClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": ">=26.1.2 <26.2",
+    "java": ">=25",
+    "fabric-api": ">=${fabric_api_version}"
+  }
+}

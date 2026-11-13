@@ -6,6 +6,7 @@ import com.packstudio.client.screen.components.GlassButton;
 import com.packstudio.client.screen.components.GlassModalDialog;
 import com.packstudio.client.screen.components.GlassNotificationOverlay;
 import com.packstudio.client.screen.components.GlassSearchField;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.client.screen.components.GlassTabButton;
 import com.packstudio.client.screen.panels.OverviewPanel;
 import com.packstudio.client.screen.panels.PackDetailsPanel;
@@ -43,7 +44,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
 /**
- * Primary Liquid Glass workspace screen for PackStudio on Minecraft 26.3.
+ * Primary Liquid Glass workspace screen for PackStudio.
  */
 public final class PackStudioScreen extends Screen implements StudioPanelHost {
     private final Screen parentScreen;
@@ -415,6 +416,12 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
         int effectiveMouseX = activeModal != null ? -1000 : mouseX;
         int effectiveMouseY = activeModal != null ? -1000 : mouseY;
 
+        // Glass search shell, painted before the widget pass so vanilla EditBox text/selection/cursor
+        // stay on top. Keeps the field independent of per-version widget render hooks.
+        if (searchBox != null) {
+            searchBox.renderShell(graphics, effectiveMouseX, effectiveMouseY);
+        }
+
         switch (activeTab) {
             case OVERVIEW -> overviewPanel.render(graphics, layout.mainContent(), effectiveMouseX, effectiveMouseY, delta);
             case ALL_PACKS, FAVORITES -> packLibraryPanel.render(graphics, layout.mainContent(), effectiveMouseX, effectiveMouseY, delta);
@@ -525,7 +532,7 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
     @Override
     public void onClose() {
         if (this.minecraft != null) {
-            this.minecraft.gui.setScreen(this.parentScreen);
+            MinecraftCompatProvider.get().setScreen(this.minecraft, this.parentScreen);
         }
     }
 
