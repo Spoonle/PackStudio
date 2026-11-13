@@ -160,19 +160,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download all verified version artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: packstudio-mc*
-          path: artifacts
-
-      - name: Assemble releases/<version>/ folders
+      - name: Build and stage all five release files
         run: |
           set -euo pipefail
-          mkdir -p releases
+          shopt -s nullglob
           for version in 26.1 26.1.1 26.1.2 26.2 26.3; do
+            echo "::group::Building PackStudio for Minecraft ${version}"
+            ./gradlew clean build --no-daemon -Pminecraft_version="${version}"
+            MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
+            SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar | head -n 1)
             mkdir -p "releases/${version}"
-            cp "artifacts/packstudio-mc${version}/releases/${version}/"* "releases/${version}/"
+            cp "$MAIN_JAR" "releases/${version}/PackStudio-${version}.jar"
+            cp "$SOURCES_JAR" "releases/${version}/PackStudio-${version}-sources.jar"
+            (cd "releases/${version}" && sha256sum "PackStudio-${version}.jar" > SHA256SUMS.txt)
+            echo "staged releases/${version}/PackStudio-${version}.jar"
+            echo "::endgroup::"
           done
           ls -R releases | head -60
 
