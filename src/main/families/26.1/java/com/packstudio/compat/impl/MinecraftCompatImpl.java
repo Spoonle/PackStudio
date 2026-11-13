@@ -1,9 +1,11 @@
 package com.packstudio.compat.impl;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.packstudio.compat.MinecraftCompat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
@@ -12,13 +14,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.util.Util;
 
 /**
  * Compatibility implementation for the Minecraft 26.1 API family (26.1, 26.1.1, 26.1.2).
  *
- * <p>Differences from the 26.2+ family: the client screen lives directly on {@code Minecraft} and
- * resource-pack root files are read from {@code Pack.open()} → {@code PackResources} (the
- * {@code PackMetadataResources} type used by 26.3 does not exist yet).
+ * <p>Differences from 26.2+: the client screen lives directly on {@code Minecraft} instead of
+ * {@code Minecraft.gui}, resource-pack root files are read through {@code Pack.open()} →
+ * {@code PackResources}, keyboard bindings use {@code InputConstants.Type.KEYSYM}, and the toast manager
+ * is reached from the client itself rather than through the GUI holder.
  */
 public final class MinecraftCompatImpl implements MinecraftCompat {
     private static final SystemToast.SystemToastId TOAST_ID = new SystemToast.SystemToastId(3800L);
@@ -47,16 +51,25 @@ public final class MinecraftCompatImpl implements MinecraftCompat {
         return new ClosingInputStream(supplier.get(), resources);
     }
 
+    @Override
+    public InputConstants.Type keyboardInputType() {
+        return InputConstants.Type.KEYSYM;
+    }
+
+    @Override
+    public void openDirectory(Path directory) {
+        Util.getPlatform().openUri(directory.toUri());
+    }
+
     /**
-     * The GUI holder that exposes {@code toastManager()} in 26.2+ does not exist in 26.1, where the
-     * toast manager is reached from the client itself. Both shapes are probed reflectively so this
-     * class keeps compiling on every 26.1 patch release; when neither is available the caller still
-     * shows the in-screen Liquid Glass notification.
+     * The GUI holder that exposes {@code toastManager()} in 26.2+ does not exist here, where the toast
+     * manager is reached from the client. Both shapes are probed reflectively so this class keeps
+     * compiling across 26.1 patch releases; when neither is available the in-screen Liquid Glass
+     * notification is still shown by {@code NotificationManager}.
      */
     @Override
     public boolean showSystemToast(String title, String message) {
-        Minecraft client = Minecraft.getInstance();
-        ToastManager toasts = resolveToastManager(client);
+        ToastManager toasts = resolveToastManager(Minecraft.getInstance());
         if (toasts == null) {
             return false;
         }

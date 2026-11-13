@@ -53,16 +53,20 @@ public final class PackStudioClient implements ClientModInitializer {
     private static void registerKeyMappings(PackStudioConfig config) {
         KeyMapping.Category category = KeyMapping.Category.register(PackStudioConstants.id("general"));
 
+        // "Keyboard" is named KEYSYM before 26.3 and KEYBOARD from 26.3 onwards; the compat layer
+        // resolves the right constant for this target.
+        InputConstants.Type keyboardType = MinecraftCompatProvider.get().keyboardInputType();
+
         InputConstants.Key openKey = InputConstants.getKey(config.openStudioKey());
         int openCode = openKey == InputConstants.UNKNOWN ? InputConstants.KEY_P : openKey.getValue();
         openStudioMapping = KeyMappingHelper.registerKeyMapping(
-                new KeyMapping("key.packstudio.open", InputConstants.Type.KEYBOARD, openCode, category)
+                new KeyMapping("key.packstudio.open", keyboardType, openCode, category)
         );
 
         InputConstants.Key quickKey = InputConstants.getKey(config.quickSwitchProfileKey());
         int quickCode = quickKey == InputConstants.UNKNOWN ? InputConstants.KEY_O : quickKey.getValue();
         quickSwitchProfileMapping = KeyMappingHelper.registerKeyMapping(
-                new KeyMapping("key.packstudio.quick_switch", InputConstants.Type.KEYBOARD, quickCode, category)
+                new KeyMapping("key.packstudio.quick_switch", keyboardType, quickCode, category)
         );
     }
 

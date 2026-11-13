@@ -96,13 +96,17 @@ jobs:
           (cd "releases/${{ matrix.minecraft }}" && sha256sum "PackStudio-${{ matrix.minecraft }}.jar" > SHA256SUMS.txt)
           cat "releases/${{ matrix.minecraft }}/SHA256SUMS.txt"
 
-      - name: Upload per-version JARs
+      - name: Upload per-version JARs and build log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: packstudio-mc${{ matrix.minecraft }}
           path: |
             build/libs/packstudio-*.jar
             releases/${{ matrix.minecraft }}/
+            gradle-${{ matrix.minecraft }}.log
+            diagnostics.txt
+          if-no-files-found: warn
 
   # ------------------------------------------------------------------------------------------------
   # Commits the verified per-version release files back onto the working branch.

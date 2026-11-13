@@ -1,8 +1,11 @@
 package com.packstudio.compat.impl;
 
+import com.mojang.blaze3d.Blaze3D;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.packstudio.compat.MinecraftCompat;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
@@ -58,6 +61,17 @@ public final class MinecraftCompatImpl implements MinecraftCompat {
                 Component.literal(message)
         );
         return true;
+    }
+
+
+    @Override
+    public InputConstants.Type keyboardInputType() {
+        return InputConstants.Type.KEYBOARD;
+    }
+
+    @Override
+    public void openDirectory(Path directory) {
+        Blaze3D.openPath(directory);
     }
 
     /** Closes the owning {@link PackMetadataResources} together with the resource stream. */

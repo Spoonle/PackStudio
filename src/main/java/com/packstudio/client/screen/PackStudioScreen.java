@@ -1,6 +1,5 @@
 package com.packstudio.client.screen;
 
-import com.mojang.blaze3d.Blaze3D;
 import com.packstudio.client.screen.AdaptiveLayout.Rect;
 import com.packstudio.client.screen.components.GlassButton;
 import com.packstudio.client.screen.components.GlassModalDialog;
@@ -347,7 +346,7 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
         if (dir != null) {
             try {
                 Files.createDirectories(dir);
-                Blaze3D.openPath(dir);
+                MinecraftCompatProvider.get().openDirectory(dir);
             } catch (Exception e) {
                 PackStudioConstants.LOGGER.warn("Failed to open resourcepacks directory {}", dir, e);
             }

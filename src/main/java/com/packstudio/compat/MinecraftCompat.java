@@ -1,7 +1,9 @@
 package com.packstudio.compat;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.server.packs.repository.Pack;
@@ -50,4 +52,19 @@ public interface MinecraftCompat {
      * @return {@code true} when the toast was handed to the client
      */
     boolean showSystemToast(String title, String message);
+
+    /**
+     * The {@code InputConstants} type used for keyboard bindings.
+     *
+     * <p>26.1 and 26.2 name it {@code KEYSYM}; 26.3 renamed it to {@code KEYBOARD}. Same value, new name.
+     */
+    InputConstants.Type keyboardInputType();
+
+    /**
+     * Opens a directory in the operating system's file browser.
+     *
+     * <p>26.3 exposes {@code Blaze3D.openPath}; the portable equivalent used by Minecraft itself on every
+     * 26.X release is {@code Util.getPlatform().openUri(...)}.
+     */
+    void openDirectory(Path directory);
 }

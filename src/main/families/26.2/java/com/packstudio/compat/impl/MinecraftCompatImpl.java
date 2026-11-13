@@ -1,8 +1,10 @@
 package com.packstudio.compat.impl;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.packstudio.compat.MinecraftCompat;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.Screen;
@@ -10,12 +12,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.util.Util;
 
 /**
  * Compatibility implementation for the Minecraft 26.2 API family.
  *
- * <p>26.2 introduced the {@code Minecraft.gui} holder for client screens, but resource-pack root files
- * are still read from {@code Pack.open()} → {@code PackResources}; {@code PackMetadataResources} only
+ * <p>26.2 introduced the {@code Minecraft.gui} holder for client screens and toasts, but
+ * resource-pack root files are still read through {@code Pack.open()} → {@code PackResources} and
+ * keyboard bindings still use {@code InputConstants.Type.KEYSYM}; {@code PackMetadataResources} only
  * arrives in 26.3.
  */
 public final class MinecraftCompatImpl implements MinecraftCompat {
@@ -43,6 +47,16 @@ public final class MinecraftCompatImpl implements MinecraftCompat {
             return null;
         }
         return new ClosingInputStream(supplier.get(), resources);
+    }
+
+    @Override
+    public InputConstants.Type keyboardInputType() {
+        return InputConstants.Type.KEYSYM;
+    }
+
+    @Override
+    public void openDirectory(Path directory) {
+        Util.getPlatform().openUri(directory.toUri());
     }
 
     @Override

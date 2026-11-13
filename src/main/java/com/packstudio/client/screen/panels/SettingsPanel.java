@@ -5,6 +5,7 @@ import com.packstudio.client.PackStudioClient;
 import com.packstudio.client.screen.AdaptiveLayout.Rect;
 import com.packstudio.client.screen.components.GlassButton;
 import com.packstudio.client.screen.components.GlassModalDialog;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.core.PackStudioConstants;
 import com.packstudio.manager.ConfigManager;
 import com.packstudio.model.LiquidThemePreset;
@@ -388,7 +389,9 @@ public final class SettingsPanel {
             listeningTarget = ListeningKeyTarget.NONE;
             return true;
         }
-        InputConstants.Key captured = InputConstants.Type.KEYBOARD.getOrCreate(event.key());
+        InputConstants.Key captured = MinecraftCompatProvider.get()
+                .keyboardInputType()
+                .getOrCreate(event.key());
         if (captured != null && captured != InputConstants.UNKNOWN) {
             PackStudioConfig cfg = host.bootstrap().configManager().config();
             if (listeningTarget == ListeningKeyTarget.OPEN_STUDIO) {
