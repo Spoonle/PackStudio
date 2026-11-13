@@ -29,7 +29,7 @@ exact Minecraft dependency range so a mismatched install fails immediately inste
 
 1. Install **Minecraft Java Edition `26.1.2`** with **[Fabric Loader `0.20.1+`](https://fabricmc.net/use/installer/)** (running on **Java `25`**).
 2. Download **[Fabric API](https://modrinth.com/mod/fabric-api)** (`0.155.3+26.1.2` or newer) and place it in your `.minecraft/mods/` folder.
-3. Scroll down to **Assets**, download **`PackStudio-26.1.2.jar`**, and drop it into `.minecraft/mods/`.
+3. Scroll down to **Assets**, download **`packstudio-fabric-26.1.2-1.0.0.jar`**, and drop it into `.minecraft/mods/`.
 4. Launch Minecraft and press **`P`** — or click **`PackStudio`** in the top-right corner of the **Title Screen**, **Options Screen**, or **Resource Packs Screen**.
 
 > **100% Client-Side**: Works on singleplayer worlds and any multiplayer server (vanilla, Fabric, Paper, Velocity) without server installation.
@@ -152,8 +152,8 @@ before relying on those.
 
 ## Attached Assets
 
-- **`PackStudio-26.1.2.jar`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
-- **`PackStudio-26.1.2-sources.jar`** — developer Java 25 sources archive
+- **`packstudio-fabric-26.1.2-1.0.0.jar`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
+- **`packstudio-fabric-26.1.2-1.0.0-sources.jar`** — developer Java 25 sources archive
 - **`SHA256SUMS.txt`** — checksum manifest for the attached files
 - **`CHANGELOG.md`** — version-specific change list
 

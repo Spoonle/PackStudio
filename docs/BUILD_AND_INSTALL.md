@@ -9,11 +9,11 @@ Download everything from the **[Releases page](https://github.com/Spoonle/PackSt
 
 | Minecraft | Release | JAR | Fabric API | Java | Fabric Loader |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `26.1` | `v1.0.0+mc26.1` | `PackStudio-26.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
-| `26.1.1` | `v1.0.0+mc26.1.1` | `PackStudio-26.1.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
-| `26.1.2` | `v1.0.0+mc26.1.2` | `PackStudio-26.1.2.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
-| `26.2` | `v1.0.0+mc26.2` | `PackStudio-26.2.jar` | `0.161.0+26.2` | 25 | `>= 0.20.1` |
-| `26.3` | `v1.0.0+mc26.3` | `PackStudio-26.3.jar` | `0.165.2+26.3` | 25 | `>= 0.20.1` |
+| `26.1` | `v1.0.0+mc26.1` | `packstudio-fabric-26.1-1.0.0.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.1.1` | `v1.0.0+mc26.1.1` | `packstudio-fabric-26.1.1-1.0.0.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.1.2` | `v1.0.0+mc26.1.2` | `packstudio-fabric-26.1.2-1.0.0.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.2` | `v1.0.0+mc26.2` | `packstudio-fabric-26.2-1.0.0.jar` | `0.161.0+26.2` | 25 | `>= 0.20.1` |
+| `26.3` | `v1.0.0+mc26.3` | `packstudio-fabric-26.3-1.0.0.jar` | `0.165.2+26.3` | 25 | `>= 0.20.1` |
 
 Every JAR declares an exact Minecraft dependency range, so a mismatched install fails fast with a clear message
 instead of misbehaving in game.
@@ -21,7 +21,7 @@ instead of misbehaving in game.
 ### Step-by-Step Setup
 1. Install **Fabric Loader `0.20.1+`** for your Minecraft version (`26.1` … `26.3`) in your launcher (Official Launcher, Prism Launcher, Modrinth App, or CurseForge App).
 2. Download **Fabric API** for the same version and place its `.jar` inside your instance's `mods/` directory.
-3. Download the matching `PackStudio-<version>.jar` from that version's release and copy it into the same `mods/` directory.
+3. Download the matching `packstudio-fabric-<version>-1.0.0.jar` from that version's release and copy it into the same `mods/` directory.
 4. Start that Minecraft version.
 5. Open PackStudio at any time by:
    - Pressing **`P`** (in-game or in menus, rebindable in Settings or Minecraft Controls), or
@@ -60,13 +60,13 @@ tests and jar audit, and are published as assets on the matching [release](https
 for v in 26.1 26.1.1 26.1.2 26.2 26.3; do
   ./gradlew clean build -Pminecraft_version="$v"
   mkdir -p "releases/$v"
-  cp build/libs/packstudio-*+mc"$v".jar "releases/$v/PackStudio-$v.jar"
+  cp build/libs/packstudio-*+mc"$v".jar "releases/$v/packstudio-fabric-$v-1.0.0.jar"
 done
 ```
 
 ### Verifying a JAR
 ```bash
-tools/verify_release_jar.sh releases/26.2/PackStudio-26.2.jar 26.2 26.2
+tools/verify_release_jar.sh releases/26.2/packstudio-fabric-26.2-1.0.0.jar 26.2 26.2
 ```
 The audit checks the packaged `fabric.mod.json` (Minecraft range, client-only, Java 25, Fabric API lower bound),
 the entrypoint class, the bundled translations and the build identity recorded in the JAR.

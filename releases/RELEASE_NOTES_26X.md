@@ -8,16 +8,16 @@ your Minecraft version; they are not interchangeable and each declares an exact 
 
 | Release folder | File | Minecraft | Fabric Loader | Fabric API | Java |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `releases/26.1/` | `PackStudio-26.1.jar` | `26.1` (`>=26.1 <26.1.1`) | `>=0.20.1` | `0.155.3+26.1.2` | 25 |
-| `releases/26.1.1/` | `PackStudio-26.1.1.jar` | `26.1.1` (`>=26.1.1 <26.1.2`) | `>=0.20.1` | `0.155.3+26.1.2` | 25 |
-| `releases/26.1.2/` | `PackStudio-26.1.2.jar` | `26.1.2` (`>=26.1.2 <26.2`) | `>=0.20.1` | `0.155.3+26.1.2` | 25 |
-| `releases/26.2/` | `PackStudio-26.2.jar` | `26.2` (`>=26.2 <26.3`) | `>=0.20.1` | `0.161.0+26.2` | 25 |
-| `releases/26.3/` | `PackStudio-26.3.jar` | `26.3` (`~26.3`) | `>=0.20.1` | `0.165.2+26.3` | 25 |
+| `releases/26.1/` | `packstudio-fabric-26.1-1.0.0.jar` | `26.1` (`>=26.1 <26.1.1`) | `>=0.20.1` | `0.155.3+26.1.2` | 25 |
+| `releases/26.1.1/` | `packstudio-fabric-26.1.1-1.0.0.jar` | `26.1.1` (`>=26.1.1 <26.1.2`) | `>=0.20.1` | `0.155.3+26.1.2` | 25 |
+| `releases/26.1.2/` | `packstudio-fabric-26.1.2-1.0.0.jar` | `26.1.2` (`>=26.1.2 <26.2`) | `>=0.20.1` | `0.155.3+26.1.2` | 25 |
+| `releases/26.2/` | `packstudio-fabric-26.2-1.0.0.jar` | `26.2` (`>=26.2 <26.3`) | `>=0.20.1` | `0.161.0+26.2` | 25 |
+| `releases/26.3/` | `packstudio-fabric-26.3-1.0.0.jar` | `26.3` (`~26.3`) | `>=0.20.1` | `0.165.2+26.3` | 25 |
 
 Each folder contains:
 
-- `PackStudio-<version>.jar` — the installable client mod for that Minecraft version
-- `PackStudio-<version>-sources.jar` — matching sources
+- `packstudio-fabric-<version>-1.0.0.jar` — the installable client mod for that Minecraft version
+- `packstudio-fabric-<version>-1.0.0-sources.jar` — matching sources
 - `SHA256SUMS.txt` — checksum of the release JAR
 
 ## Verification performed for every target

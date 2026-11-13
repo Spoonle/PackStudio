@@ -18,7 +18,7 @@ and on any multiplayer server without server installation.
 
 1. Install Fabric Loader `0.20.1+` for Minecraft `26.1`.
 2. Put **Fabric API `0.155.3+26.1.2`** in `.minecraft/mods/`.
-3. Put **`PackStudio-26.1.jar`** in `.minecraft/mods/`.
+3. Put **`packstudio-fabric-26.1-1.0.0.jar`** in `.minecraft/mods/`.
 4. Launch the game and press **`P`** (rebindable), or click **PackStudio** on the Title / Options / Resource
    Packs screen.
 

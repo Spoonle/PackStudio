@@ -122,8 +122,8 @@ def version_changes() -> str:
 
 def build_body(target: dict) -> str:
     mc = target["mc"]
-    jar = f"PackStudio-{mc}.jar"
-    sources = f"PackStudio-{mc}-sources.jar"
+    jar = f"packstudio-fabric-{mc}-{MOD_VERSION}.jar"
+    sources = f"packstudio-fabric-{mc}-{MOD_VERSION}-sources.jar"
 
     return f"""# PackStudio `{MOD_VERSION}+mc{mc}`
 

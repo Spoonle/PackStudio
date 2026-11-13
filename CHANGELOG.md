@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - **Minecraft 26.1, 26.1.1, 26.1.2 and 26.2 support** alongside the existing 26.3 release, as four additional
-  independent distribution JARs (`releases/<version>/PackStudio-<version>.jar`).
+  independent distribution JARs (`releases/<version>/packstudio-fabric-<version>-1.0.0.jar`).
 - **Multi-version build**: `-Pminecraft_version=<version>` selects the Minecraft version, the official Fabric
   Loader / Fabric API versions, the API compatibility layer and the `fabric.mod.json` dependency range.
 - **`com.packstudio.compat` compatibility layer** with one implementation per Minecraft API family, so the shared

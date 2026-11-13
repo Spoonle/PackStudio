@@ -12,11 +12,11 @@ matches your game, together with the official Fabric API build for that same ver
 
 | Minecraft | PackStudio file | Fabric API |
 | :--- | :--- | :--- |
-| `26.1` | `PackStudio-26.1.jar` | `0.155.3+26.1.2` |
-| `26.1.1` | `PackStudio-26.1.1.jar` | `0.155.3+26.1.2` |
-| `26.1.2` | `PackStudio-26.1.2.jar` | `0.155.3+26.1.2` |
-| `26.2` | `PackStudio-26.2.jar` | `0.161.0+26.2` |
-| `26.3` | `PackStudio-26.3.jar` | `0.165.2+26.3` |
+| `26.1` | `packstudio-fabric-26.1-1.0.0.jar` | `0.155.3+26.1.2` |
+| `26.1.1` | `packstudio-fabric-26.1.1-1.0.0.jar` | `0.155.3+26.1.2` |
+| `26.1.2` | `packstudio-fabric-26.1.2-1.0.0.jar` | `0.155.3+26.1.2` |
+| `26.2` | `packstudio-fabric-26.2-1.0.0.jar` | `0.161.0+26.2` |
+| `26.3` | `packstudio-fabric-26.3-1.0.0.jar` | `0.165.2+26.3` |
 
 All five require **Fabric Loader `0.20.1+`** and **Java 25**. Each file declares an exact Minecraft dependency
 range, so a mismatched install fails immediately instead of misbehaving.

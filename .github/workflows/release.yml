@@ -95,9 +95,9 @@ jobs:
           tools/verify_release_jar.sh "$MAIN_JAR" "$MC" "$FAMILY"
 
           mkdir -p dist
-          cp "$MAIN_JAR" "dist/PackStudio-$MC.jar"
-          cp "$SOURCES_JAR" "dist/PackStudio-$MC-sources.jar"
-          (cd dist && sha256sum "PackStudio-$MC.jar" "PackStudio-$MC-sources.jar" > SHA256SUMS.txt)
+          cp "$MAIN_JAR" "dist/packstudio-fabric-$MC-1.0.0.jar"
+          cp "$SOURCES_JAR" "dist/packstudio-fabric-$MC-1.0.0-sources.jar"
+          (cd dist && sha256sum "packstudio-fabric-$MC-1.0.0.jar" "packstudio-fabric-$MC-1.0.0-sources.jar" > SHA256SUMS.txt)
           ls -l dist
 
       - name: Upload JAR & Checksum Assets to GitHub Release
@@ -115,7 +115,7 @@ jobs:
               --title "PackStudio v1.0.0+mc$MC — Minimalist Resource Pack & Preset Manager (Minecraft $MC)" \
               --notes-file "$NOTES"
           fi
-          ASSETS=(dist/"PackStudio-$MC.jar" dist/"PackStudio-$MC-sources.jar" dist/SHA256SUMS.txt)
+          ASSETS=(dist/"packstudio-fabric-$MC-1.0.0.jar" dist/"packstudio-fabric-$MC-1.0.0-sources.jar" dist/SHA256SUMS.txt)
           gh release upload "$TAG" "${ASSETS[@]}" --clobber
 
       - name: Confirm the release really carries this version's assets
@@ -128,7 +128,7 @@ jobs:
           # A release page without its JAR is worse than a failed job, so assert the assets are attached.
           NAMES=$(gh release view "$TAG" --json assets --jq '.assets[]?.name')
           echo "$NAMES"
-          for expected in "PackStudio-$MC.jar" "PackStudio-$MC-sources.jar" "SHA256SUMS.txt"; do
+          for expected in "packstudio-fabric-$MC-1.0.0.jar" "packstudio-fabric-$MC-1.0.0-sources.jar" "SHA256SUMS.txt"; do
             if ! printf '%s\n' "$NAMES" | grep -Fxq "$expected"; then
               echo "::error title=MissingAsset($TAG)::expected asset '$expected' is not attached to the release"
               exit 1
