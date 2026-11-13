@@ -9,12 +9,17 @@ plugins {
 // can never be built with another version's dependencies.
 // ---------------------------------------------------------------------------------------------------
 def minecraftTargets = [
-		'26.1'  : [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2'],
-		'26.1.1': [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2'],
-		'26.1.2': [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2'],
-		'26.2'  : [family: '26.2', loader: '0.20.1', fabricApi: '0.161.0+26.2'],
-		// 26.3 is the baseline release: identical Minecraft, Loader and Fabric API versions as before.
-		'26.3'  : [family: '26.3', loader: '0.20.1', fabricApi: '0.165.2+26.3'],
+		'26.1'  : [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2',
+		           minecraftRange: '>=26.1 <26.1.1', fabricApiRange: '>=0.155.3+26.1.2'],
+		'26.1.1': [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2',
+		           minecraftRange: '>=26.1.1 <26.1.2', fabricApiRange: '>=0.155.3+26.1.2'],
+		'26.1.2': [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2',
+		           minecraftRange: '>=26.1.2 <26.2', fabricApiRange: '>=0.155.3+26.1.2'],
+		'26.2'  : [family: '26.2', loader: '0.20.1', fabricApi: '0.161.0+26.2',
+		           minecraftRange: '>=26.2 <26.3', fabricApiRange: '>=0.161.0+26.2'],
+		// 26.3 is the baseline release: unchanged Minecraft, Loader and Fabric API versions.
+		'26.3'  : [family: '26.3', loader: '0.20.1', fabricApi: '0.165.2+26.3',
+		           minecraftRange: '~26.3', fabricApiRange: '*'],
 ]
 
 def minecraftVersion = (findProperty('minecraft_version') ?: '26.3').toString()
@@ -25,6 +30,8 @@ if (target == null) {
 def minecraftFamily = target.family
 def loaderVersion = target.loader
 def fabricApiVersion = target.fabricApi
+def minecraftRange = target.minecraftRange
+def fabricApiRange = target.fabricApiRange
 
 version = "${project.mod_version}+mc${minecraftVersion}"
 group = project.maven_group
@@ -88,38 +95,25 @@ processResources {
 	def modVersion = project.version
 	def minecraftVersionProperty = minecraftVersion
 	def loaderVersionProperty = loaderVersion
-	def fabricApiVersionProperty = fabricApiVersion
-	def versionTemplateDir = layout.projectDirectory.dir("src/main/versions/${minecraftVersion}")
-	def hasVersionTemplate = versionTemplateDir.asFile.exists()
+	def minecraftRangeProperty = minecraftRange
+	def fabricApiRangeProperty = fabricApiRange
 
 	inputs.property 'version', modVersion
 	inputs.property 'minecraft_version', minecraftVersionProperty
 	inputs.property 'loader_version', loaderVersionProperty
-	inputs.property 'fabric_api_version', fabricApiVersionProperty
-	inputs.property 'uses_version_template', hasVersionTemplate
+	inputs.property 'minecraft_range', minecraftRangeProperty
+	inputs.property 'fabric_api_range', fabricApiRangeProperty
 
-	// Targets that need their own dependency bounds ship a per-version fabric.mod.json; everything else
-	// (assets, translations) is shared. The baseline 26.3 template stays in src/main/resources.
-	if (hasVersionTemplate) {
-		exclude('fabric.mod.json')
-		from(versionTemplateDir) {
-			include 'fabric.mod.json'
-			expand(
-					'version': modVersion,
-					'minecraft_version': minecraftVersionProperty,
-					'loader_version': loaderVersionProperty,
-					'fabric_api_version': fabricApiVersionProperty
-			)
-		}
-	} else {
-		filesMatching('fabric.mod.json') {
-			expand(
-					'version': modVersion,
-					'minecraft_version': minecraftVersionProperty,
-					'loader_version': loaderVersionProperty,
-					'fabric_api_version': fabricApiVersionProperty
-			)
-		}
+	// One shared template: assets are common to every target and only the dependency bounds change,
+	// so no target can end up with a missing or duplicated fabric.mod.json.
+	filesMatching('fabric.mod.json') {
+		expand(
+				'version': modVersion,
+				'minecraft_version': minecraftVersionProperty,
+				'loader_version': loaderVersionProperty,
+				'minecraft_range': minecraftRangeProperty,
+				'fabric_api_range': fabricApiRangeProperty
+		)
 	}
 
 	from(generateBuildInfo)
