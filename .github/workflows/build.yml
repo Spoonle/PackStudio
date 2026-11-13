@@ -122,6 +122,16 @@ jobs:
             && echo "audit evidence posted as commit comment" \
             || echo "::warning title=AuditEvidence::could not post commit comment"
 
+      - name: Surface test failures in this job's summary
+        if: failure()
+        run: |
+          set +e
+          python3 tools/explain_failure.py "gradle-${{ matrix.minecraft }}.log" "${{ matrix.minecraft }}" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "::group::tail of the build log"
+          tail -n 60 "gradle-${{ matrix.minecraft }}.log"
+          echo "::endgroup::"
+
       - name: Stage verified release file for this Minecraft version
         run: |
           set -euo pipefail

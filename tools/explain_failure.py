@@ -4,8 +4,10 @@
 GitHub surfaces only a handful of annotations per step, so this prints a single compact payload that
 starts with compiler diagnostics and then the Gradle failure block (including JUnit failure summaries).
 """
+import glob
 import re
 import sys
+import xml.etree.ElementTree as ET
 
 
 def main() -> int:
@@ -37,6 +39,17 @@ def main() -> int:
     for i, line in enumerate(lines):
         if "What went wrong" in line or "Could not resolve" in line:
             picked.extend(item.strip() for item in lines[i:i + 6])
+
+    # 4. JUnit XML: the assertion messages themselves, which Gradle only prints in the HTML/XML report.
+    for report in sorted(glob.glob("build/test-results/test/*.xml")):
+        try:
+            root = ET.parse(report).getroot()
+        except (OSError, ET.ParseError):
+            continue
+        for case in root.iter("testcase"):
+            for failure in list(case.iter("failure")) + list(case.iter("error")):
+                message = (failure.get("message") or failure.text or "").strip().replace("\n", " ")
+                picked.append(f"{case.get('classname', '?')}::{case.get('name', '?')} -> {message[:500]}")
 
     if not picked:
         picked = [line.strip() for line in lines[-40:] if line.strip()]
