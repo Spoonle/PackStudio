@@ -76,24 +76,29 @@
 
 ## Installation
 
-Pick **only** the release folder that matches your Minecraft version — each JAR declares an exact
-Minecraft dependency range and will not load on another version.
+**All downloads are on the [Releases page »](https://github.com/Spoonle/PackStudio/releases)**
 
-| Minecraft | Release file | Fabric API |
+PackStudio ships **one release per Minecraft version**, each with its own JAR and its own change list. Open the
+release that matches your game — they are listed below with the Fabric API build each one needs.
+
+| Minecraft | Download from | Fabric API |
 | :--- | :--- | :--- |
-| `26.1` | [`releases/26.1/PackStudio-26.1.jar`](releases/26.1/PackStudio-26.1.jar) | `0.155.3+26.1.2` |
-| `26.1.1` | [`releases/26.1.1/PackStudio-26.1.1.jar`](releases/26.1.1/PackStudio-26.1.1.jar) | `0.155.3+26.1.2` |
-| `26.1.2` | [`releases/26.1.2/PackStudio-26.1.2.jar`](releases/26.1.2/PackStudio-26.1.2.jar) | `0.155.3+26.1.2` |
-| `26.2` | [`releases/26.2/PackStudio-26.2.jar`](releases/26.2/PackStudio-26.2.jar) | `0.161.0+26.2` |
-| `26.3` | [`releases/26.3/PackStudio-26.3.jar`](releases/26.3/PackStudio-26.3.jar) | `0.165.2+26.3` |
+| `26.1` | [Releases → `v1.0.0+mc26.1`](https://github.com/Spoonle/PackStudio/releases) | `0.155.3+26.1.2` |
+| `26.1.1` | [Releases → `v1.0.0+mc26.1.1`](https://github.com/Spoonle/PackStudio/releases) | `0.155.3+26.1.2` |
+| `26.1.2` | [Releases → `v1.0.0+mc26.1.2`](https://github.com/Spoonle/PackStudio/releases) | `0.155.3+26.1.2` |
+| `26.2` | [Releases → `v1.0.0+mc26.2`](https://github.com/Spoonle/PackStudio/releases) | `0.161.0+26.2` |
+| `26.3` | [Releases → `v1.0.0+mc26.3`](https://github.com/Spoonle/PackStudio/releases) | `0.165.2+26.3` |
+
+Each JAR declares an exact Minecraft dependency range, so installing the wrong one fails immediately with a clear
+message instead of misbehaving in game. There is no universal JAR.
 
 1. Install your **Minecraft Java Edition** version with **Fabric Loader `0.20.1+`** (running on **Java 25**).
 2. Place the matching **Fabric API** build into your `.minecraft/mods/` folder.
-3. Place the matching **PackStudio** JAR into `.minecraft/mods/`.
+3. Download the matching **PackStudio** JAR from the [Releases page](https://github.com/Spoonle/PackStudio/releases) and place it in `.minecraft/mods/`.
 4. Launch Minecraft and press **`P`** or click the **`PackStudio`** button on the Title / Options / Resource Packs screen.
 
-Release notes and per-version changelogs live in [`releases/RELEASE_NOTES_26X.md`](releases/RELEASE_NOTES_26X.md)
-and `releases/<version>/CHANGELOG.md`.
+Per-version change lists and requirements are documented on each release page and in
+[`CHANGELOG.md`](CHANGELOG.md).
 
 See [`docs/BUILD_AND_INSTALL.md`](docs/BUILD_AND_INSTALL.md) for detailed installation and troubleshooting steps.
 
@@ -113,7 +118,7 @@ and **Java `25`**. One shared codebase builds every supported Minecraft version:
 `-Pminecraft_version` selects the Minecraft version, the official Fabric API / Loader versions, the API
 compatibility layer and the `fabric.mod.json` dependency range for that target. Compiled artifacts are emitted to
 `build/libs/packstudio-1.0.0+mc<version>.jar`; verified release files are collected into
-`releases/<version>/PackStudio-<version>.jar`.
+`releases/<version>/` before being published to the Releases page.
 
 How the version differences are handled is documented in
 [`docs/MULTIVERSION_COMPATIBILITY.md`](docs/MULTIVERSION_COMPATIBILITY.md).

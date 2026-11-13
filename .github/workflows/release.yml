@@ -43,6 +43,7 @@ jobs:
       - name: Resolve the Minecraft target for this release
         id: target
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_MC: ${{ github.event.inputs.minecraft_version }}
           EVENT_TAG: ${{ github.event.release.tag_name }}
           INPUT_TAG: ${{ github.event.inputs.tag }}
@@ -67,6 +68,14 @@ jobs:
           esac
           echo "family=$family" >> "$GITHUB_OUTPUT"
           echo "Building PackStudio for Minecraft $MC (family $family), tag $TAG"
+          # Re-running for an already published release is supported (e.g. to (re)attach missing assets).
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release_exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG already exists; assets will be attached to it."
+          else
+            echo "release_exists=false" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG does not exist yet; it will be created."
+          fi
 
       - name: Build, test and audit the target JAR
         env:
@@ -96,9 +105,33 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.target.outputs.tag }}
           MC: ${{ steps.target.outputs.mc }}
+          RELEASE_EXISTS: ${{ steps.target.outputs.release_exists }}
         run: |
           set -euo pipefail
-          cp "$GITHUB_WORKSPACE/releases/$MC/CHANGELOG.md" dist/CHANGELOG.md 2>/dev/null || true
+          NOTES="$GITHUB_WORKSPACE/releases/$MC/RELEASE_PAGE.md"
+          if [ "$RELEASE_EXISTS" != "true" ]; then
+            gh release create "$TAG" \
+              --target main \
+              --title "PackStudio v1.0.0+mc$MC — Liquid Glass Resource Pack & Preset Manager (Minecraft $MC)" \
+              --notes-file "$NOTES"
+          fi
           ASSETS=(dist/"PackStudio-$MC.jar" dist/"PackStudio-$MC-sources.jar" dist/SHA256SUMS.txt)
-          [ -f dist/CHANGELOG.md ] && ASSETS+=(dist/CHANGELOG.md)
           gh release upload "$TAG" "${ASSETS[@]}" --clobber
+
+      - name: Confirm the release really carries this version's assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.target.outputs.tag }}
+          MC: ${{ steps.target.outputs.mc }}
+        run: |
+          set -euo pipefail
+          # A release page without its JAR is worse than a failed job, so assert the assets are attached.
+          NAMES=$(gh release view "$TAG" --json assets --jq '.assets[]?.name')
+          echo "$NAMES"
+          for expected in "PackStudio-$MC.jar" "PackStudio-$MC-sources.jar" "SHA256SUMS.txt"; do
+            if ! printf '%s\n' "$NAMES" | grep -Fxq "$expected"; then
+              echo "::error title=MissingAsset($TAG)::expected asset '$expected' is not attached to the release"
+              exit 1
+            fi
+          done
+          echo "::notice title=ReleaseAssets($TAG)::all expected assets are attached"
