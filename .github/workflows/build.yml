@@ -67,6 +67,7 @@ jobs:
             echo "::error title=GradleBuildFailed(${{ matrix.minecraft }})::$SUMMARY"
             exit $EXIT_CODE
           fi
+          grep -E "tests, [0-9]+ skipped, [0-9]+ failed" "$LOG" || true
 
       - name: Audit generated JAR metadata and target identity
         run: |

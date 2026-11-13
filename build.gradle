@@ -136,6 +136,20 @@ tasks.named('test', Test) {
 		events 'passed', 'skipped', 'failed'
 		exceptionFormat = 'full'
 	}
+	doLast {
+		def reports = layout.buildDirectory.dir('test-results/test').get().asFile
+		def suites = (reports.listFiles() ?: []).findAll { it.name.endsWith('.xml') }
+		def total = 0
+		def skipped = 0
+		def failed = 0
+		suites.each { file ->
+			def xml = new groovy.xml.XmlSlurper().parse(file)
+			total += (xml.@tests.text() as Integer)
+			skipped += (xml.@skipped.text() as Integer)
+			failed += (xml.@failures.text() as Integer) + (xml.@errors.text() as Integer)
+		}
+		println "Minecraft ${minecraftVersion} (family ${minecraftFamily}): ${total} tests, ${skipped} skipped, ${failed} failed"
+	}
 }
 
 java {
@@ -154,25 +168,9 @@ jar {
 	}
 }
 
-/**
- * Loads the freshly compiled mod classes against this target's real Minecraft artifact and asserts
- * that the jar was built for the declared version and contains the matching compatibility layer.
- */
-def verifyTarget = tasks.register('verifyTarget', JavaExec) {
-	group = 'verification'
-	description = "Verifies Minecraft ${minecraftVersion} target identity (family ${minecraftFamily}) against the resolved game jar."
-	// Test output is listed explicitly: Loom's test runtime classpath does not always surface it.
-	classpath = files(sourceSets.test.output, sourceSets.main.output) + sourceSets.test.runtimeClasspath
-	mainClass = 'com.packstudio.build.VerifyTarget'
-	systemProperty 'packstudio.expected.minecraft_version', minecraftVersion
-	systemProperty 'packstudio.expected.family', minecraftFamily
-	dependsOn tasks.named('testClasses')
-	ignoreExitValue = false
-}
-
-tasks.named('check') {
-	dependsOn verifyTarget
-}
+// Target identity is asserted by com.packstudio.build.TargetIdentityTest, which runs inside the normal
+// JUnit suite (same runtime classpath as the rest of the tests) against this target's real Minecraft
+// artifact. `check` therefore fails for a stale or mismatched target.
 
 /**
  * Copies this target's verified jar into releases/<minecraft version>/PackStudio-<minecraft version>.jar
