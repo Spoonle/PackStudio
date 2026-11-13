@@ -3,16 +3,24 @@
 ## Player Installation Instructions
 
 ### Requirements
-- **Minecraft Java Edition**: `26.3`
-- **Java Runtime**: Java `25` (bundled with modern Minecraft launchers for 26.x, or [Eclipse Temurin 25](https://adoptium.net/))
-- **Mod Loader**: [Fabric Loader](https://fabricmc.net/use/installer/) `0.20.1` or newer
-- **Required Dependency**: [Fabric API](https://modrinth.com/mod/fabric-api) `0.165.2+26.3` or newer
+PackStudio ships **one independent JAR per Minecraft version**. Download only the JAR that matches yours.
+
+| Minecraft | JAR | Fabric API | Java | Fabric Loader |
+| :--- | :--- | :--- | :--- | :--- |
+| `26.1` | `releases/26.1/PackStudio-26.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.1.1` | `releases/26.1.1/PackStudio-26.1.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.1.2` | `releases/26.1.2/PackStudio-26.1.2.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.2` | `releases/26.2/PackStudio-26.2.jar` | `0.161.0+26.2` | 25 | `>= 0.20.1` |
+| `26.3` | `releases/26.3/PackStudio-26.3.jar` | `0.165.2+26.3` | 25 | `>= 0.20.1` |
+
+Every JAR declares an exact Minecraft dependency range, so a mismatched install fails fast with a clear message
+instead of misbehaving in game.
 
 ### Step-by-Step Setup
-1. Install **Fabric Loader `0.20.1+`** for Minecraft `26.3` in your launcher (Official Launcher, Prism Launcher, Modrinth App, or CurseForge App).
-2. Download **Fabric API** for `26.3` and place its `.jar` inside your instance's `mods/` directory.
-3. Copy `packstudio-1.0.0+mc26.3.jar` into the same `mods/` directory.
-4. Start Minecraft `26.3`.
+1. Install **Fabric Loader `0.20.1+`** for your Minecraft version (`26.1` … `26.3`) in your launcher (Official Launcher, Prism Launcher, Modrinth App, or CurseForge App).
+2. Download **Fabric API** for the same version and place its `.jar` inside your instance's `mods/` directory.
+3. Copy the matching `PackStudio-<version>.jar` into the same `mods/` directory.
+4. Start that Minecraft version.
 5. Open PackStudio at any time by:
    - Pressing **`P`** (in-game or in menus, rebindable in Settings or Minecraft Controls), or
    - Clicking the **`PackStudio`** button in the top-right corner of the **Title Screen**, **Options Screen**, or **Resource Packs Screen**.
@@ -28,30 +36,58 @@ PackStudio is **strictly client-side** (`"environment": "client"` in `fabric.mod
 
 ### Prerequisites
 - **JDK 25** (`JAVA_HOME` pointing to an OpenJDK 25 installation such as Temurin `25.0.2`).
-- Outbound internet access to `maven.fabricmc.net`, `repo.maven.apache.org`, and `libraries.minecraft.net` so Fabric Loom `1.19` can resolve Minecraft `26.3` and Fabric API `0.165.2+26.3`.
+- Outbound internet access to `maven.fabricmc.net`, `repo.maven.apache.org`, and `libraries.minecraft.net` so Fabric Loom `1.19` can resolve Minecraft and the official Fabric API for the target.
 
-### Building the Distributable JAR
-From the repository root:
+### Building a Distributable JAR
+From the repository root, one Minecraft version per build:
 
 ```bash
-./gradlew clean build
+./gradlew clean build                              # Minecraft 26.3 (default)
+./gradlew clean build -Pminecraft_version=26.2     # or 26.1 / 26.1.1 / 26.1.2
 ```
 
 Output artifacts:
-- `build/libs/packstudio-1.0.0+mc26.3.jar` — Ready-to-distribute Fabric mod JAR
-- `build/libs/packstudio-1.0.0+mc26.3-sources.jar` — Sources archive
+- `build/libs/packstudio-1.0.0+mc<version>.jar` — ready-to-distribute Fabric mod JAR
+- `build/libs/packstudio-1.0.0+mc<version>-sources.jar` — sources archive
 
-*(A prebuilt verified release artifact is also included at `releases/packstudio-1.0.0+mc26.3.jar`.)*
+Verified per-version release files are committed to `releases/<version>/PackStudio-<version>.jar` by CI after
+each target passes its build, tests and jar audit.
+
+### Building All Five Release Files
+```bash
+for v in 26.1 26.1.1 26.1.2 26.2 26.3; do
+  ./gradlew clean build -Pminecraft_version="$v"
+  mkdir -p "releases/$v"
+  cp build/libs/packstudio-*+mc"$v".jar "releases/$v/PackStudio-$v.jar"
+done
+```
+
+### Verifying a JAR
+```bash
+tools/verify_release_jar.sh releases/26.2/PackStudio-26.2.jar 26.2 26.2
+```
+The audit checks the packaged `fabric.mod.json` (Minecraft range, client-only, Java 25, Fabric API lower bound),
+the entrypoint class, the bundled translations and the build identity recorded in the JAR.
 
 ### Launching a Development Client
 ```bash
-./gradlew runClient
+./gradlew runClient                              # 26.3
+./gradlew runClient -Pminecraft_version=26.1     # or any supported target
 ```
 
 ### Running Automated Tests
 ```bash
-./gradlew test
+./gradlew test                                   # 26.3
+./gradlew test -Pminecraft_version=26.1.2        # same suite, different target
 ```
+
+The suite includes target-identity and jar-metadata audits, so it fails if the classes were compiled against a
+different Minecraft version than the one the build targets.
+
+### What the automated suite cannot verify
+Interactive behaviour needs a real Minecraft client and is **not** covered: GPU rendering, texture upload,
+live resource-pack reloads, real SDL key capture, OS folder dialogs and native toasts. Perform the manual smoke
+test listed in [`releases/RELEASE_NOTES_26X.md`](../releases/RELEASE_NOTES_26X.md) before publishing a release.
 
 ---
 

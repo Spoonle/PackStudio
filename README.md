@@ -2,13 +2,13 @@
 
 > **Your resource packs. Your presets. Your world.**
 
-**PackStudio** is a client-side **Minecraft Java Edition 26.3** Fabric mod that replaces clunky vanilla resource pack juggling with a refined **Liquid Glass** studio workspace. Browse ZIP and folder packs in Grid or List mode, inspect authentic `pack.mcmeta` metadata, organize reusable presets, and switch entire resource pack stacks in a single click — directly inside Minecraft.
+**PackStudio** is a client-side **Minecraft Java Edition 26.X** Fabric mod (26.1, 26.1.1, 26.1.2, 26.2 and 26.3) that replaces clunky vanilla resource pack juggling with a refined **Liquid Glass** studio workspace. Browse ZIP and folder packs in Grid or List mode, inspect authentic `pack.mcmeta` metadata, organize reusable presets, and switch entire resource pack stacks in a single click — directly inside Minecraft.
 
-- **Minecraft**: `26.3` (Unobfuscated Java Edition)
-- **Mod Loader**: Fabric Loader `0.20.1+` + Fabric API `0.165.2+26.3`
+- **Minecraft**: `26.1`, `26.1.1`, `26.1.2`, `26.2`, `26.3` (unobfuscated Java Edition, one JAR per version)
+- **Mod Loader**: Fabric Loader `0.20.1+`, with the official Fabric API build per version
 - **Java Runtime**: Java `25`
 - **Environment**: `100% Client-Side` (works on any singleplayer world or multiplayer server without server installation)
-- **Zero Mixins & Zero Blur Shaders**: Built exclusively on public Minecraft 26.3 & Fabric APIs (`GuiGraphicsExtractor`, `ScreenEvents`, `KeyMappingHelper`, `PackRepository`) for rock-solid compatibility with Sodium and modern optimization mods.
+- **Zero Mixins & Zero Blur Shaders**: Built exclusively on public Minecraft & Fabric APIs (`GuiGraphicsExtractor`, `ScreenEvents`, `KeyMappingHelper`, `PackRepository`) for rock-solid compatibility with Sodium and modern optimization mods.
 
 ---
 
@@ -76,10 +76,24 @@
 
 ## Installation
 
-1. Install **Minecraft Java Edition `26.3`** with **Fabric Loader `0.20.1+`** (running on **Java 25**).
-2. Download and place **Fabric API** (`0.165.2+26.3` or newer) into your `.minecraft/mods/` folder.
-3. Place `packstudio-1.0.0+mc26.3.jar` (available in [`releases/packstudio-1.0.0+mc26.3.jar`](releases/packstudio-1.0.0+mc26.3.jar) or built via Gradle) into `.minecraft/mods/`.
+Pick **only** the release folder that matches your Minecraft version — each JAR declares an exact
+Minecraft dependency range and will not load on another version.
+
+| Minecraft | Release file | Fabric API |
+| :--- | :--- | :--- |
+| `26.1` | [`releases/26.1/PackStudio-26.1.jar`](releases/26.1/PackStudio-26.1.jar) | `0.155.3+26.1.2` |
+| `26.1.1` | [`releases/26.1.1/PackStudio-26.1.1.jar`](releases/26.1.1/PackStudio-26.1.1.jar) | `0.155.3+26.1.2` |
+| `26.1.2` | [`releases/26.1.2/PackStudio-26.1.2.jar`](releases/26.1.2/PackStudio-26.1.2.jar) | `0.155.3+26.1.2` |
+| `26.2` | [`releases/26.2/PackStudio-26.2.jar`](releases/26.2/PackStudio-26.2.jar) | `0.161.0+26.2` |
+| `26.3` | [`releases/26.3/PackStudio-26.3.jar`](releases/26.3/PackStudio-26.3.jar) | `0.165.2+26.3` |
+
+1. Install your **Minecraft Java Edition** version with **Fabric Loader `0.20.1+`** (running on **Java 25**).
+2. Place the matching **Fabric API** build into your `.minecraft/mods/` folder.
+3. Place the matching **PackStudio** JAR into `.minecraft/mods/`.
 4. Launch Minecraft and press **`P`** or click the **`PackStudio`** button on the Title / Options / Resource Packs screen.
+
+Release notes and per-version changelogs live in [`releases/RELEASE_NOTES_26X.md`](releases/RELEASE_NOTES_26X.md)
+and `releases/<version>/CHANGELOG.md`.
 
 See [`docs/BUILD_AND_INSTALL.md`](docs/BUILD_AND_INSTALL.md) for detailed installation and troubleshooting steps.
 
@@ -87,16 +101,22 @@ See [`docs/BUILD_AND_INSTALL.md`](docs/BUILD_AND_INSTALL.md) for detailed instal
 
 ## Building from Source
 
-PackStudio uses the official unobfuscated Minecraft `26.3` **Fabric Loom `1.19`** toolchain with **Gradle `9.8.2`** and **Java `25`**:
+PackStudio uses the official unobfuscated Minecraft **Fabric Loom `1.19`** toolchain with **Gradle `9.8.2`**
+and **Java `25`**. One shared codebase builds every supported Minecraft version:
 
 ```bash
 # Requires JDK 25 (e.g. Eclipse Temurin 25)
-./gradlew clean build
+./gradlew clean build                          # defaults to Minecraft 26.3
+./gradlew clean build -Pminecraft_version=26.2 # one target per build
 ```
 
-Compiled artifacts are emitted to:
-- `build/libs/packstudio-1.0.0+mc26.3.jar` — Distributable client mod JAR
-- `build/libs/packstudio-1.0.0+mc26.3-sources.jar` — Sources JAR
+`-Pminecraft_version` selects the Minecraft version, the official Fabric API / Loader versions, the API
+compatibility layer and the `fabric.mod.json` dependency range for that target. Compiled artifacts are emitted to
+`build/libs/packstudio-1.0.0+mc<version>.jar`; verified release files are collected into
+`releases/<version>/PackStudio-<version>.jar`.
+
+How the version differences are handled is documented in
+[`docs/MULTIVERSION_COMPATIBILITY.md`](docs/MULTIVERSION_COMPATIBILITY.md).
 
 Run the automated JUnit 5 test suite with:
 
