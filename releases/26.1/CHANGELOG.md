@@ -31,7 +31,7 @@ Do not install the JARs for other Minecraft versions: each one declares an exact
 - Keyboard bindings use `InputConstants.Type.KEYSYM`; folders open via `Util.getPlatform().openUri`.
 - Fabric API `0.155.3+26.1.2` is the official build for 26.1 / 26.1.1 / 26.1.2.
 
-Everything else is the same Liquid Glass experience on every target: resource pack library (grid/list, search,
+Everything else is the same Minimalist experience on every target: resource pack library (grid/list, search,
 filters, favourites, priority ordering), pack inspector with honest `pack.mcmeta` metadata, schema-versioned
 profile manager (create/rename/duplicate/delete/export/import), one-click profile switching with rollback,
 compatibility warnings, adaptive layout, and keyboard navigation.

@@ -2,7 +2,7 @@
 
 **Your resource packs. Your presets. Your world.**
 
-**PackStudio** brings a fast, refined **Liquid Glass** resource pack and preset studio directly into **Minecraft Java Edition 26.1 – 26.3 (Fabric)**. Stop dragging dozens of packs back and forth every time you switch between PvP, building, cinematics, or high-FPS play — organize your packs visually and switch presets in a single click.
+**PackStudio** brings a fast, refined **minimalist** resource pack and preset studio directly into **Minecraft Java Edition 26.1 – 26.3 (Fabric)**. Stop dragging dozens of packs back and forth every time you switch between PvP, building, cinematics, or high-FPS play — organize your packs visually and switch presets in a single click.
 
 
 ### Supported Minecraft Versions
@@ -34,7 +34,7 @@ range, so a mismatched install fails immediately instead of misbehaving.
   - Clearly warns when a profile references a missing pack — never silently replaces it.
   - Automatically restores your previous pack stack if a resource reload fails.
 - **Pack Inspector**: View real `pack.mcmeta` descriptions, authors (when declared), pack format versions, compatibility badges, and exact priority rank (`#1` = highest override).
-- **Liquid Glass UI (Zero Blur Shaders, Zero Mixins)**: Choose between *Obsidian Cyan*, *Midnight Indigo*, and *Frosted Emerald*, tune panel opacity (`45%`–`96%`), and enjoy full compatibility with **Sodium** and modern performance mods.
+- **Minimalist UI (Zero Shaders, Zero Mixins)**: Choose between *Obsidian Cyan*, *Midnight Indigo*, and *Frosted Emerald*, and enjoy a flat, distraction-free interface with full compatibility with **Sodium** and modern performance mods.
 
 ---
 

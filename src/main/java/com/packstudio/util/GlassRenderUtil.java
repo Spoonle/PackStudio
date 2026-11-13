@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Mth;
 
 /**
- * Native Minecraft {@link GuiGraphicsExtractor} rendering primitives for the Liquid Glass design system.
+ * Native Minecraft {@link GuiGraphicsExtractor} rendering primitives for the Minimalist design system.
  * Uses zero custom shaders for predictable performance and 100% compatibility with Sodium.
  */
 public final class GlassRenderUtil {

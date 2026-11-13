@@ -38,7 +38,7 @@ The 26.3 baseline keeps `minecraft: ~26.3` and `fabric-api: "*"`, exactly as it 
 | `managedIoExecutorRunsOffCallerThreadOnDaemonWorker` | icon/metadata work never blocks the render thread |
 | `discoversRealZipAndFolderPacksAndAppliesOrRollsBackReloads` | real ZIP/folder discovery, apply, rollback |
 | `profileCrudImportExportMissingPackAndTransactionalSwitching` | full profile lifecycle + missing-pack handling |
-| `liquidGlassComponentsRenderAndHandleInputCleanly` | widget render + input dispatch without exceptions |
+| `minimalistComponentsRenderAndHandleInputCleanly` | widget render + input dispatch without exceptions |
 | `adaptiveLayoutNeverOverlapsAcrossGuiScales` | layout across GUI scales |
 | `fullScreenRendersAllTabsViewsAndPersistsSettings` | all tabs/views render, settings persist |
 | `clientEntrypointInitializesAndRegistersScreens` | entrypoint registration, screen construction |
@@ -55,7 +55,7 @@ The 26.3 baseline keeps `minecraft: ~26.3` and `fabric-api: "*"`, exactly as it 
 
 These cannot run headlessly and are **not** claimed as verified:
 
-1. GPU rendering: Liquid Glass panels, texture upload, real window sizes / GUI scales.
+1. GPU rendering: Minimalist panels, texture upload, real window sizes / GUI scales.
 2. Live resource-pack reload of a running game and the visual result.
 3. Real key capture through SDL (P / O bindings, Controls screen rebinding).
 4. OS folder opening and native system toasts.

@@ -22,7 +22,7 @@ import net.minecraft.network.chat.Component;
 import org.junit.jupiter.api.Test;
 
 /**
- * Verifies Milestone 2 UI Foundation: Liquid Glass primitives, adaptive multi-scale layout,
+ * Verifies Milestone 2 UI Foundation: Minimalist primitives, adaptive multi-scale layout,
  * animation toggle behavior, and modal/notification components.
  */
 class UiFoundationMilestoneTest {
@@ -62,7 +62,7 @@ class UiFoundationMilestoneTest {
     }
 
     @Test
-    void liquidGlassComponentsRenderAndHandleInputCleanly(@org.junit.jupiter.api.io.TempDir java.nio.file.Path tempDir) {
+    void minimalistComponentsRenderAndHandleInputCleanly(@org.junit.jupiter.api.io.TempDir java.nio.file.Path tempDir) {
         Minecraft client = TestHarnessBridge.requireHeadlessClient(tempDir);
         PackStudioConfig cfg = new PackStudioConfig();
         GuiGraphicsExtractor graphics = TestHarnessBridge.createGraphics(640, 360, 2);
@@ -78,7 +78,7 @@ class UiFoundationMilestoneTest {
         tabBtn.extractRenderState(graphics, 20, 115, 0.2F);
 
         NotificationManager notifications = new NotificationManager();
-        notifications.info("PackStudio", "Liquid Glass ready");
+        notifications.info("PackStudio", "Minimalist design ready");
         GlassNotificationOverlay.render(graphics, client.font, 640, cfg, notifications);
 
         AtomicReference<String> submitted = new AtomicReference<>();

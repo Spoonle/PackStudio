@@ -76,7 +76,7 @@ public final class SettingsPanel {
         int cursorY = viewport.y() + 2 - (int) Math.round(scrollOffset);
         int startY = cursorY;
 
-        // 1. Liquid Glass Theme
+        // 1. Minimalist Theme
         cursorY = drawSettingRow(
                 graphics, font, viewport, rowX, cursorY, rowW,
                 I18n.get("packstudio.settings.theme"),
@@ -181,7 +181,7 @@ public final class SettingsPanel {
         cursorY = drawSettingRow(
                 graphics, font, viewport, rowX, cursorY, rowW,
                 I18n.get("packstudio.settings.reset"),
-                "Restores default Liquid Glass appearance and keybindings (keeps profiles & favorites).",
+                "Restores default Minimalist appearance and keybindings (keeps profiles & favorites).",
                 "Reset Defaults",
                 false, true, cfg, mouseX, mouseY,
                 this::confirmResetSettings
@@ -305,7 +305,7 @@ public final class SettingsPanel {
 
             int textMaxW = Math.max(40, minusX - (x + 8) - 8);
             graphics.text(font, TextFormatUtil.ellipsize(font, I18n.get("packstudio.settings.opacity"), textMaxW), x + 8, y + 6, theme.textPrimary(), false);
-            graphics.text(font, TextFormatUtil.ellipsize(font, "Adjust Liquid Glass surface translucency (45%–96%).", textMaxW), x + 8, y + 19, theme.textMuted(), false);
+            graphics.text(font, TextFormatUtil.ellipsize(font, "Adjust Minimalist surface translucency (45%–96%).", textMaxW), x + 8, y + 19, theme.textMuted(), false);
 
             controlZones.add(new ControlZone(clip(minusRect, viewport), () -> {
                 AbstractWidget.playButtonClickSound(Minecraft.getInstance().getSoundManager());

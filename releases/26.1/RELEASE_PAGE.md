@@ -2,7 +2,7 @@
 
 > **Your resource packs. Your presets. Your world.**
 
-Client-side **Minecraft Java Edition `26.1` (Fabric)** mod — a modern, native **Liquid Glass** resource pack
+Client-side **Minecraft Java Edition `26.1` (Fabric)** mod — a modern, native **minimalist** resource pack
 library and one-click preset manager built directly into the Minecraft client.
 
 > **This release is only for Minecraft `26.1`.** PackStudio ships one independent release per Minecraft
@@ -44,7 +44,7 @@ exact Minecraft dependency range so a mismatched install fails immediately inste
 | **Mod Loader** | Fabric Loader `>= 0.20.1` |
 | **Required Dependency** | Fabric API `0.155.3+26.1.2` or newer |
 | **Java Runtime** | Java `25` |
-| **Side / Compatibility** | Client-only (`Zero Mixins`, `Zero Blur Shaders` — **Sodium** compatible) |
+| **Side / Compatibility** | Client-only (`Zero Mixins`, `Zero Shaders` — **Sodium** compatible) |
 | **API family** | `26.1` (shared codebase + one version-specific compatibility layer) |
 
 ---
@@ -74,7 +74,7 @@ exact Minecraft dependency range so a mismatched install fails immediately inste
 
 ### Version differences across the whole 26.X line
 
-Every target is the same mod: the same Liquid Glass UI, the same features, the same behaviour. Only the four
+Every target is the same mod: the same Minimalist UI, the same features, the same behaviour. Only the four
 Minecraft APIs that actually differ between 26.1 and 26.3 are implemented per API family, behind one small
 `com.packstudio.compat` seam:
 
@@ -121,9 +121,9 @@ Minecraft APIs that actually differ between 26.1 and 26.3 are implemented per AP
 - Validates the preset, applies exact priority order via `PackRepository#setSelected`, and triggers `Minecraft#reloadResourcePacks()`.
 - Confirms profile activation **strictly after reload completion** and automatically restores your previous configuration if reload fails.
 
-### Pack Inspector & Liquid Glass Settings
+### Pack Inspector & Minimalist Settings
 - Displays authentic pack descriptions, authors (strictly when declared in `pack.mcmeta`), pack formats, compatibility badges, state, and priority rank.
-- Three dark translucent themes (*Obsidian Cyan*, *Midnight Indigo*, *Frosted Emerald*), adjustable opacity (`45%`–`96%`), default view mode, smooth animation toggle, launch button toggles, and interactive SDL3 shortcut rebinding.
+- Three dark themes (*Obsidian Cyan*, *Midnight Indigo*, *Frosted Emerald*), adjustable opacity (`45%`–`96%`), default view mode, smooth animation toggle, launch button toggles, and interactive SDL3 shortcut rebinding.
 
 ### Default Controls
 - **`P`** — Open PackStudio

@@ -2,7 +2,7 @@
 
 > **Your resource packs. Your presets. Your world.**
 
-First stable release of **PackStudio** for **Minecraft Java Edition `26.3` (Fabric)** — a modern, native **Liquid Glass** resource pack library and one-click preset manager integrated directly into the Minecraft client.
+First stable release of **PackStudio** for **Minecraft Java Edition `26.3` (Fabric)** — a modern, native **minimalist** resource pack library and one-click preset manager integrated directly into the Minecraft client.
 
 ---
 
@@ -25,7 +25,7 @@ First stable release of **PackStudio** for **Minecraft Java Edition `26.3` (Fabr
 | **Mod Loader** | Fabric Loader `>= 0.20.1` |
 | **Required Dependency** | Fabric API (`0.165.2+26.3+`) |
 | **Java Runtime** | Java `25` |
-| **Side / Compatibility** | Client-only (`Zero Mixins`, `Zero Blur Shaders` — **Sodium** compatible) |
+| **Side / Compatibility** | Client-only (`Zero Mixins`, `Zero Shaders` — **Sodium** compatible) |
 
 ---
 
@@ -61,9 +61,9 @@ First stable release of **PackStudio** for **Minecraft Java Edition `26.3` (Fabr
 - Validates the preset, applies exact priority order via `PackRepository#setSelected`, and triggers `Minecraft#reloadResourcePacks()`.
 - Confirms profile activation **strictly after reload completion** and automatically restores your previous configuration if reload fails.
 
-### Pack Inspector & Liquid Glass Settings
+### Pack Inspector & Minimalist Settings
 - Displays authentic pack descriptions, authors (strictly when declared in `pack.mcmeta`), pack formats, compatibility badges, state, and priority rank.
-- Three dark translucent themes (*Obsidian Cyan*, *Midnight Indigo*, *Frosted Emerald*), adjustable opacity (`45%`–`96%`), default view mode, smooth animation toggle, launch button toggles, and interactive SDL3 shortcut rebinding.
+- Three dark themes (*Obsidian Cyan*, *Midnight Indigo*, *Frosted Emerald*), adjustable opacity (`45%`–`96%`), default view mode, smooth animation toggle, launch button toggles, and interactive SDL3 shortcut rebinding.
 
 ### Default Controls
 - **`P`** — Open PackStudio

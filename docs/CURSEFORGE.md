@@ -1,8 +1,8 @@
-# PackStudio — Liquid Glass Resource Pack & Preset Manager
+# PackStudio — Minimalist Resource Pack & Preset Manager
 
 **Your resource packs. Your presets. Your world.**
 
-**PackStudio** upgrades resource pack management in **Minecraft Java Edition 26.1 – 26.3 (Fabric)** with a sleek, responsive **Liquid Glass** workspace built natively inside the game client. Browse large pack collections effortlessly, save custom ordered presets, and swap your entire visual setup in one click.
+**PackStudio** upgrades resource pack management in **Minecraft Java Edition 26.1 – 26.3 (Fabric)** with a sleek, responsive **minimalist** workspace built natively inside the game client. Browse large pack collections effortlessly, save custom ordered presets, and swap your entire visual setup in one click.
 
 
 ### Supported Minecraft Versions
@@ -41,10 +41,10 @@ range, so a mismatched install fails immediately instead of misbehaving.
    - Confirms success only after reload finishes — and safely rolls back to your prior pack configuration if reload fails.
    - Press **`O`** anytime to quick-switch between saved presets!
 
-4. **Lightweight Liquid Glass Aesthetic**
-   - Three dark translucent themes: **Obsidian Cyan**, **Midnight Indigo**, and **Frosted Emerald**.
+4. **Lightweight Minimalist Aesthetic**
+   - Three dark themes: **Obsidian Cyan**, **Midnight Indigo**, and **Frosted Emerald**.
    - Configurable UI transparency, default Grid/List view, smooth transition toggle, and SDL3 shortcut rebinding.
-   - **Zero Mixins & Zero Blur Shaders** — engineered on public Minecraft and Fabric APIs for maximum stability alongside Sodium and other client mods.
+   - **Zero Mixins & Zero Shaders** — engineered on public Minecraft and Fabric APIs for maximum stability alongside Sodium and other client mods.
 
 ---
 

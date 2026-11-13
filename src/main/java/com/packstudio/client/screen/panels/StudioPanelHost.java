@@ -12,7 +12,7 @@ import java.util.Optional;
 import net.minecraft.client.gui.Font;
 
 /**
- * Clean contract exposed by {@code PackStudioScreen} to its child Liquid Glass panels.
+ * Clean contract exposed by {@code PackStudioScreen} to its child Minimalist panels.
  */
 public interface StudioPanelHost {
     PackStudioBootstrap bootstrap();

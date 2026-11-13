@@ -12,7 +12,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 /**
- * Native {@link EditBox} subclass styled as a rounded Liquid Glass search bar while preserving
+ * Native {@link EditBox} subclass styled as a rounded Minimalist search bar while preserving
  * Minecraft's full SDL3 text input, selection, clipboard, and cursor handling.
  *
  * <p>The glass shell is painted by {@link #renderShell} from the screen's background pass rather than
@@ -59,7 +59,7 @@ public final class GlassSearchField extends EditBox {
     }
 
     /**
-     * Paints the Liquid Glass shell and search glyph behind the field's own text.
+     * Paints the Minimalist shell and search glyph behind the field's own text.
      *
      * <p>Must be called before the widget pass so vanilla {@link EditBox} text, selection highlighting,
      * and the blinking cursor render on top of the shell.

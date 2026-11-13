@@ -2,13 +2,13 @@
 
 > **Your resource packs. Your presets. Your world.**
 
-**PackStudio** is a client-side **Minecraft Java Edition 26.X** Fabric mod (26.1, 26.1.1, 26.1.2, 26.2 and 26.3) that replaces clunky vanilla resource pack juggling with a refined **Liquid Glass** studio workspace. Browse ZIP and folder packs in Grid or List mode, inspect authentic `pack.mcmeta` metadata, organize reusable presets, and switch entire resource pack stacks in a single click — directly inside Minecraft.
+**PackStudio** is a client-side **Minecraft Java Edition 26.X** Fabric mod (26.1, 26.1.1, 26.1.2, 26.2 and 26.3) that replaces clunky vanilla resource pack juggling with a refined **minimalist** studio workspace. Browse ZIP and folder packs in Grid or List mode, inspect authentic `pack.mcmeta` metadata, organize reusable presets, and switch entire resource pack stacks in a single click — directly inside Minecraft.
 
 - **Minecraft**: `26.1`, `26.1.1`, `26.1.2`, `26.2`, `26.3` (unobfuscated Java Edition, one JAR per version)
 - **Mod Loader**: Fabric Loader `0.20.1+`, with the official Fabric API build per version
 - **Java Runtime**: Java `25`
 - **Environment**: `100% Client-Side` (works on any singleplayer world or multiplayer server without server installation)
-- **Zero Mixins & Zero Blur Shaders**: Built exclusively on public Minecraft & Fabric APIs (`GuiGraphicsExtractor`, `ScreenEvents`, `KeyMappingHelper`, `PackRepository`) for rock-solid compatibility with Sodium and modern optimization mods.
+- **Zero Mixins & Zero Shaders**: Built exclusively on public Minecraft & Fabric APIs (`GuiGraphicsExtractor`, `ScreenEvents`, `KeyMappingHelper`, `PackRepository`) for rock-solid compatibility with Sodium and modern optimization mods.
 
 ---
 
@@ -56,8 +56,8 @@
 - Displays `Author` strictly when declared in `pack.mcmeta` (`Not specified` otherwise — never fabricated).
 - Quarantines corrupted config or profile JSON files to timestamped `.corrupt.<timestamp>.bak` backups rather than crashing or silently erasing user files.
 
-### 5. Liquid Glass Design System & Settings
-- Three curated dark translucent themes: **Obsidian Cyan**, **Midnight Indigo**, and **Frosted Emerald**.
+### 5. Minimalist Design System & Settings
+- Three curated dark themes: **Obsidian Cyan**, **Midnight Indigo**, and **Frosted Emerald**.
 - Adjustable **Panel Opacity** (`45%`–`96%`), **Default Library View**, **Smooth UI Transitions** toggle, **Title/Options Launch Button** toggles, and interactive **SDL3 Keyboard Shortcut** rebinding.
 - Responsive `AdaptiveLayout` across GUI scales (`1x`–`4x`) and window sizes.
 

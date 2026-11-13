@@ -78,7 +78,7 @@ public final class OverviewPanel {
         );
         cursorY += 28;
 
-        // 2. Four Liquid Glass metric cards (2x2 on narrow widths, 4x1 on spacious widths)
+        // 2. Four Minimalist metric cards (2x2 on narrow widths, 4x1 on spacious widths)
         int cols = innerW >= 340 ? 4 : 2;
         int cardGap = 6;
         int cardW = (innerW - cardGap * (cols - 1)) / cols;

@@ -15,7 +15,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 
 /**
- * Sidebar navigation button with active Liquid Glass pill highlight and optional item-count badge.
+ * Sidebar navigation button with active Minimalist pill highlight and optional item-count badge.
  */
 public final class GlassTabButton extends Button {
     private final NavigationTab tab;

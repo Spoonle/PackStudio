@@ -64,7 +64,7 @@ public final class MinecraftCompatImpl implements MinecraftCompat {
     /**
      * The GUI holder that exposes {@code toastManager()} in 26.2+ does not exist here, where the toast
      * manager is reached from the client. Both shapes are probed reflectively so this class keeps
-     * compiling across 26.1 patch releases; when neither is available the in-screen Liquid Glass
+     * compiling across 26.1 patch releases; when neither is available the in-screen minimalist
      * notification is still shown by {@code NotificationManager}.
      */
     @Override

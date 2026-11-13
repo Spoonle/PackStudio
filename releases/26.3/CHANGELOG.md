@@ -30,7 +30,7 @@ Do not install the JARs for other Minecraft versions: each one declares an exact
 - Uses `Pack.openMetadata()` → `PackMetadataResources`, `InputConstants.Type.KEYBOARD` and `Blaze3D.openPath`.
 - The previously shipped `1.0.0+mc26.3` jar remains available unchanged.
 
-Everything else is the same Liquid Glass experience on every target: resource pack library (grid/list, search,
+Everything else is the same Minimalist experience on every target: resource pack library (grid/list, search,
 filters, favourites, priority ordering), pack inspector with honest `pack.mcmeta` metadata, schema-versioned
 profile manager (create/rename/duplicate/delete/export/import), one-click profile switching with rollback,
 compatibility warnings, adaptive layout, and keyboard navigation.

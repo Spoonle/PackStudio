@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Verifies Milestone 5 full Liquid Glass UI screens, panels, keyboard navigation,
+ * Verifies Milestone 5 full Minimalist UI screens, panels, keyboard navigation,
  * unsaved-changes guard, and persistent SDL3 Settings rebinding.
  */
 class FullUiAndSettingsMilestoneTest {

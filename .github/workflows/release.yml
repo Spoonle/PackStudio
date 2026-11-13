@@ -112,7 +112,7 @@ jobs:
           if [ "$RELEASE_EXISTS" != "true" ]; then
             gh release create "$TAG" \
               --target main \
-              --title "PackStudio v1.0.0+mc$MC — Liquid Glass Resource Pack & Preset Manager (Minecraft $MC)" \
+              --title "PackStudio v1.0.0+mc$MC — Minimalist Resource Pack & Preset Manager (Minecraft $MC)" \
               --notes-file "$NOTES"
           fi
           ASSETS=(dist/"PackStudio-$MC.jar" dist/"PackStudio-$MC-sources.jar" dist/SHA256SUMS.txt)

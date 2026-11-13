@@ -29,7 +29,7 @@ Do not install the JARs for other Minecraft versions: each one declares an exact
 - Same API family as 26.1; official Fabric API `0.155.3+26.1.2` covers 26.1, 26.1.1 and 26.1.2.
 - Dependency metadata is pinned to `>=26.1.1 <26.1.2` so the jar only loads on 26.1.1.
 
-Everything else is the same Liquid Glass experience on every target: resource pack library (grid/list, search,
+Everything else is the same Minimalist experience on every target: resource pack library (grid/list, search,
 filters, favourites, priority ordering), pack inspector with honest `pack.mcmeta` metadata, schema-versioned
 profile manager (create/rename/duplicate/delete/export/import), one-click profile switching with rollback,
 compatibility warnings, adaptive layout, and keyboard navigation.

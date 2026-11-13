@@ -1,7 +1,7 @@
 package com.packstudio.model;
 
 /**
- * Curated dark Liquid Glass color themes with controlled accent palettes and high-contrast text.
+ * Curated dark Minimalist color themes with controlled accent palettes and high-contrast text.
  */
 public enum LiquidThemePreset {
     OBSIDIAN_CYAN(
