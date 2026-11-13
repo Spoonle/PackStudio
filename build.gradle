@@ -161,7 +161,8 @@ jar {
 def verifyTarget = tasks.register('verifyTarget', JavaExec) {
 	group = 'verification'
 	description = "Verifies Minecraft ${minecraftVersion} target identity (family ${minecraftFamily}) against the resolved game jar."
-	classpath = sourceSets.test.runtimeClasspath
+	// Test output is listed explicitly: Loom's test runtime classpath does not always surface it.
+	classpath = files(sourceSets.test.output, sourceSets.main.output) + sourceSets.test.runtimeClasspath
 	mainClass = 'com.packstudio.build.VerifyTarget'
 	systemProperty 'packstudio.expected.minecraft_version', minecraftVersion
 	systemProperty 'packstudio.expected.family', minecraftFamily
