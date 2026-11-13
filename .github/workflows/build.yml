@@ -73,7 +73,7 @@ jobs:
         run: |
           set +e
           chmod +x tools/verify_release_jar.sh
-          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
+          MAIN_JAR=$(ls build/libs/packstudio-*.jar 2>/dev/null | grep -v '\-sources\.jar$' | head -n 1)
           {
             echo "## Jar audit — Minecraft ${{ matrix.minecraft }}"
             echo ""
@@ -103,8 +103,9 @@ jobs:
       - name: Stage verified release file for this Minecraft version
         run: |
           set -euo pipefail
-          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
-          SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar | head -n 1)
+          shopt -s nullglob
+          MAIN_JAR=$(ls build/libs/packstudio-*.jar 2>/dev/null | grep -v '\-sources\.jar$' | head -n 1)
+          SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar 2>/dev/null | head -n 1)
           mkdir -p "releases/${{ matrix.minecraft }}"
           cp "$MAIN_JAR" "releases/${{ matrix.minecraft }}/PackStudio-${{ matrix.minecraft }}.jar"
           cp "$SOURCES_JAR" "releases/${{ matrix.minecraft }}/PackStudio-${{ matrix.minecraft }}-sources.jar"
