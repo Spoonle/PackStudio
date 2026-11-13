@@ -63,8 +63,16 @@ jobs:
           EXIT_CODE=$?
           cat "$LOG"
           if [ $EXIT_CODE -ne 0 ]; then
-            SUMMARY=$(grep -E -A 3 "error:|FAILED|Exception|Caused by:|What went wrong" "$LOG" | tail -n 60 | tr '\n' '|' | cut -c1-3500)
-            echo "::error title=GradleBuildFailed(${{ matrix.minecraft }})::$SUMMARY"
+            # Surface compiler diagnostics in full: chunked so each annotation stays readable.
+            grep -E "error:|symbol:|location:|required:|found:|Could not resolve|FAILED|What went wrong" "$LOG" \
+              | head -n 80 > diagnostics.txt || true
+            split -b 2600 -d -a 2 diagnostics.txt diag-chunk- || true
+            n=0
+            for chunk in diag-chunk-*; do
+              [ -e "$chunk" ] || continue
+              n=$((n+1))
+              echo "::error title=BuildFailure(${{ matrix.minecraft }}) part ${n}::$(tr '\n' '|' < "$chunk")"
+            done
             exit $EXIT_CODE
           fi
           grep -E "tests, [0-9]+ skipped, [0-9]+ failed" "$LOG" || true
