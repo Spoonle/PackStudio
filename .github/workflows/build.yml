@@ -83,7 +83,22 @@ jobs:
             echo "exit=$?"
             echo '```'
           } | tee "$GITHUB_STEP_SUMMARY" audit-output.txt
+          # Diagnostic breadcrumb: job logs are not always retrievable, so publish the audit output.
+          {
+            echo "### Jar audit — Minecraft ${{ matrix.minecraft }}"
+            echo '```'
+            cat audit-output.txt
+            echo '```'
+            echo "files in build/libs:"
+            echo '```'
+            ls build/libs || true
+            echo '```'
+          } > comment.md
+          gh api -X POST "repos/${{ github.repository }}/comments" \
+            -f commit_id="$GITHUB_SHA" -F body=@comment.md >/dev/null 2>&1 || true
           grep -F 'JAR AUDIT PASSED' audit-output.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Stage verified release file for this Minecraft version
         run: |
