@@ -1,11 +1,11 @@
 package com.packstudio.client.screen;
 
-import com.mojang.blaze3d.Blaze3D;
 import com.packstudio.client.screen.AdaptiveLayout.Rect;
 import com.packstudio.client.screen.components.GlassButton;
 import com.packstudio.client.screen.components.GlassModalDialog;
 import com.packstudio.client.screen.components.GlassNotificationOverlay;
 import com.packstudio.client.screen.components.GlassSearchField;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.client.screen.components.GlassTabButton;
 import com.packstudio.client.screen.panels.OverviewPanel;
 import com.packstudio.client.screen.panels.PackDetailsPanel;
@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -43,7 +42,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
 /**
- * Primary Liquid Glass workspace screen for PackStudio on Minecraft 26.3.
+ * Primary Liquid Glass workspace screen for PackStudio.
  */
 public final class PackStudioScreen extends Screen implements StudioPanelHost {
     private final Screen parentScreen;
@@ -57,7 +56,7 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
     private String selectedPackId = "";
 
     private AdaptiveLayout layout;
-    private EditBox searchBox;
+    private GlassSearchField searchBox;
     private GlassButton sortButton;
     private GlassButton viewToggleButton;
     private GlassButton applyButton;
@@ -347,7 +346,7 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
         if (dir != null) {
             try {
                 Files.createDirectories(dir);
-                Blaze3D.openPath(dir);
+                MinecraftCompatProvider.get().openDirectory(dir);
             } catch (Exception e) {
                 PackStudioConstants.LOGGER.warn("Failed to open resourcepacks directory {}", dir, e);
             }
@@ -414,6 +413,12 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
         // 2. Active Center Panel + Optional Right Details Panel
         int effectiveMouseX = activeModal != null ? -1000 : mouseX;
         int effectiveMouseY = activeModal != null ? -1000 : mouseY;
+
+        // Glass search shell, painted before the widget pass so vanilla EditBox text/selection/cursor
+        // stay on top. Keeps the field independent of per-version widget render hooks.
+        if (searchBox != null) {
+            searchBox.renderShell(graphics, effectiveMouseX, effectiveMouseY);
+        }
 
         switch (activeTab) {
             case OVERVIEW -> overviewPanel.render(graphics, layout.mainContent(), effectiveMouseX, effectiveMouseY, delta);
@@ -525,7 +530,7 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
     @Override
     public void onClose() {
         if (this.minecraft != null) {
-            this.minecraft.gui.setScreen(this.parentScreen);
+            MinecraftCompatProvider.get().setScreen(this.minecraft, this.parentScreen);
         }
     }
 

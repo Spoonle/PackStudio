@@ -1,7 +1,7 @@
-# Gradle
-.gradle/
-build/
-out/
+# Gradle (only the root build output — source packages may legitimately be named 'build')
+/.gradle/
+/build/
+/out/
 
 # IDEs
 .idea/

@@ -2,6 +2,7 @@ package com.packstudio.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.packstudio.client.screen.PackStudioScreen;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.core.PackStudioBootstrap;
 import com.packstudio.core.PackStudioConstants;
 import com.packstudio.model.PackStudioConfig;
@@ -24,7 +25,7 @@ import net.minecraft.client.gui.screens.packs.PackSelectionScreen;
 import net.minecraft.network.chat.Component;
 
 /**
- * Client-side Fabric entrypoint for PackStudio on Minecraft 26.3.
+ * Client-side Fabric entrypoint for PackStudio.
  * Registers SDL3-compatible {@link KeyMapping}s and non-intrusive screen launch buttons.
  */
 public final class PackStudioClient implements ClientModInitializer {
@@ -52,16 +53,20 @@ public final class PackStudioClient implements ClientModInitializer {
     private static void registerKeyMappings(PackStudioConfig config) {
         KeyMapping.Category category = KeyMapping.Category.register(PackStudioConstants.id("general"));
 
+        // "Keyboard" is named KEYSYM before 26.3 and KEYBOARD from 26.3 onwards; the compat layer
+        // resolves the right constant for this target.
+        InputConstants.Type keyboardType = MinecraftCompatProvider.get().keyboardInputType();
+
         InputConstants.Key openKey = InputConstants.getKey(config.openStudioKey());
         int openCode = openKey == InputConstants.UNKNOWN ? InputConstants.KEY_P : openKey.getValue();
         openStudioMapping = KeyMappingHelper.registerKeyMapping(
-                new KeyMapping("key.packstudio.open", InputConstants.Type.KEYBOARD, openCode, category)
+                new KeyMapping("key.packstudio.open", keyboardType, openCode, category)
         );
 
         InputConstants.Key quickKey = InputConstants.getKey(config.quickSwitchProfileKey());
         int quickCode = quickKey == InputConstants.UNKNOWN ? InputConstants.KEY_O : quickKey.getValue();
         quickSwitchProfileMapping = KeyMappingHelper.registerKeyMapping(
-                new KeyMapping("key.packstudio.quick_switch", InputConstants.Type.KEYBOARD, quickCode, category)
+                new KeyMapping("key.packstudio.quick_switch", keyboardType, quickCode, category)
         );
     }
 
@@ -69,7 +74,7 @@ public final class PackStudioClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (openStudioMapping != null) {
                 while (openStudioMapping.consumeClick()) {
-                    openPackStudio(client, client.gui.screen());
+                    openPackStudio(client, MinecraftCompatProvider.get().currentScreen(client));
                 }
             }
             if (quickSwitchProfileMapping != null) {
@@ -105,18 +110,18 @@ public final class PackStudioClient implements ClientModInitializer {
     }
 
     public static void openPackStudio(Minecraft client, Screen parent) {
-        if (client == null || client.gui == null) {
+        if (client == null) {
             return;
         }
-        if (client.gui.screen() instanceof PackStudioScreen) {
+        if (MinecraftCompatProvider.get().currentScreen(client) instanceof PackStudioScreen) {
             return;
         }
-        client.gui.setScreen(new PackStudioScreen(parent));
+        MinecraftCompatProvider.get().setScreen(client, new PackStudioScreen(parent));
     }
 
     private static void onQuickSwitchRequested(Minecraft client) {
         if (client != null) {
-            boolean outsideStudio = !(client.gui.screen() instanceof PackStudioScreen);
+            boolean outsideStudio = !(MinecraftCompatProvider.get().currentScreen(client) instanceof PackStudioScreen);
             PackStudioBootstrap.get().profileApplier().cycleNextProfile(outsideStudio);
         }
     }

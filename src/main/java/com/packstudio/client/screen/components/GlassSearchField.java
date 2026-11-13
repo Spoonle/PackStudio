@@ -13,7 +13,11 @@ import net.minecraft.network.chat.Component;
 
 /**
  * Native {@link EditBox} subclass styled as a rounded Liquid Glass search bar while preserving
- * Minecraft 26.3's full SDL3 text input, selection, clipboard, and cursor handling.
+ * Minecraft's full SDL3 text input, selection, clipboard, and cursor handling.
+ *
+ * <p>The glass shell is painted by {@link #renderShell} from the screen's background pass rather than
+ * from a widget render hook, so the field keeps vanilla text, selection, and cursor rendering on every
+ * 26.X release without depending on which widget hook that release exposes.
  */
 public final class GlassSearchField extends EditBox {
     private final Font textFont;
@@ -54,8 +58,13 @@ public final class GlassSearchField extends EditBox {
         return false;
     }
 
-    @Override
-    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+    /**
+     * Paints the Liquid Glass shell and search glyph behind the field's own text.
+     *
+     * <p>Must be called before the widget pass so vanilla {@link EditBox} text, selection highlighting,
+     * and the blinking cursor render on top of the shell.
+     */
+    public void renderShell(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (!this.visible) {
             return;
         }
@@ -78,7 +87,5 @@ public final class GlassSearchField extends EditBox {
 
         int iconY = shellY + (shellHeight - 8) / 2;
         graphics.text(textFont, "⌕", shellX + 6, iconY, focused ? theme.accentPrimary() : theme.textMuted(), false);
-
-        super.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
     }
 }

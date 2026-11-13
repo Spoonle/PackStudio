@@ -2,6 +2,7 @@ package com.packstudio.manager;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.core.PackStudioConstants;
 import com.packstudio.core.PackStudioExecutors;
 import java.io.InputStream;
@@ -14,9 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.PackMetadataResources;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.resources.IoSupplier;
 
 /**
  * Asynchronous pack icon loader and GPU texture cache backed by Minecraft's {@link TextureManager}.
@@ -121,14 +120,11 @@ public final class PackIconCache {
     }
 
     private static NativeImage decodePackPng(Pack pack) {
-        try (PackMetadataResources meta = pack.openMetadata()) {
-            IoSupplier<InputStream> supplier = meta.getRootResource("pack.png");
-            if (supplier == null) {
+        try (InputStream in = MinecraftCompatProvider.get().openRootResource(pack, "pack.png")) {
+            if (in == null) {
                 return null;
             }
-            try (InputStream in = supplier.get()) {
-                return NativeImage.read(in);
-            }
+            return NativeImage.read(in);
         } catch (Exception e) {
             PackStudioConstants.LOGGER.debug("Pack '{}' has no readable pack.png: {}", pack.getId(), e.getMessage());
             return null;

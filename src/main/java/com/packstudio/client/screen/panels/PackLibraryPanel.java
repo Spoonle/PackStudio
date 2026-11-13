@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.packstudio.client.screen.AdaptiveLayout.Rect;
 import com.packstudio.manager.PackIconCache;
 import com.packstudio.manager.PackRepositoryManager;
+import com.packstudio.compatibility.CompatibilityAnalyzer;
 import com.packstudio.model.FilterMode;
 import com.packstudio.model.LiquidThemePreset;
 import com.packstudio.model.NavigationTab;
@@ -234,7 +235,9 @@ public final class PackLibraryPanel {
 
             int compatColor = pack.compatibility().badgeColor();
             graphics.fill(cx + 6, stripY + 4, cx + 11, stripY + 9, compatColor);
-            String compatShort = pack.compatibility().isCompatible() ? "26.3 OK" : pack.compatibility().displayName().getString();
+            String compatShort = pack.compatibility().isCompatible()
+                    ? CompatibilityAnalyzer.currentGameVersion() + " OK"
+                    : pack.compatibility().displayName().getString();
             int availCompatW = Math.max(12, leftRightBound - (cx + 14));
             graphics.text(font, TextFormatUtil.ellipsize(font, compatShort, availCompatW), cx + 14, stripY + 3, compatColor, false);
 

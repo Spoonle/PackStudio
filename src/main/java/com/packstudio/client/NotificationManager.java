@@ -1,22 +1,19 @@
 package com.packstudio.client;
 
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.core.PackStudioConstants;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 
 /**
- * Manages clean in-screen Liquid Glass notifications as well as native Minecraft {@link SystemToast}s
+ * Manages clean in-screen Liquid Glass notifications as well as native Minecraft system toasts
  * when PackStudio is not the active screen.
  */
 public final class NotificationManager {
     private static final int MAX_VISIBLE = 3;
     private static final long DEFAULT_DURATION_MS = 4200L;
-    private static final SystemToast.SystemToastId TOAST_ID = new SystemToast.SystemToastId(3800L);
 
     public enum Level {
         INFO(0xFF38BDF8),
@@ -75,15 +72,10 @@ public final class NotificationManager {
         ));
 
         if (alsoSystemToast) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc != null && mc.gui != null && mc.gui.toastManager() != null) {
-                SystemToast.addOrUpdate(
-                        mc.gui.toastManager(),
-                        TOAST_ID,
-                        Component.literal(title == null ? PackStudioConstants.MOD_NAME : title),
-                        Component.literal(message == null ? "" : message)
-                );
-            }
+            MinecraftCompatProvider.get().showSystemToast(
+                    title == null ? PackStudioConstants.MOD_NAME : title,
+                    message == null ? "" : message
+            );
         }
     }
 

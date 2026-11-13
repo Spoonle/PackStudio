@@ -3,43 +3,120 @@ plugins {
 	id 'maven-publish'
 }
 
-version = "${project.mod_version}+mc${project.minecraft_version}"
+// ---------------------------------------------------------------------------------------------------
+// Multi-version targets. Select one per build with -Pminecraft_version=<version>.
+// Each target resolves its own official Fabric API / Loader versions and its own API family, so a jar
+// can never be built with another version's dependencies.
+// ---------------------------------------------------------------------------------------------------
+def minecraftTargets = [
+		'26.1'  : [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2',
+		           minecraftRange: '>=26.1 <26.1.1', fabricApiRange: '>=0.155.3+26.1.2'],
+		'26.1.1': [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2',
+		           minecraftRange: '>=26.1.1 <26.1.2', fabricApiRange: '>=0.155.3+26.1.2'],
+		'26.1.2': [family: '26.1', loader: '0.20.1', fabricApi: '0.155.3+26.1.2',
+		           minecraftRange: '>=26.1.2 <26.2', fabricApiRange: '>=0.155.3+26.1.2'],
+		'26.2'  : [family: '26.2', loader: '0.20.1', fabricApi: '0.161.0+26.2',
+		           minecraftRange: '>=26.2 <26.3', fabricApiRange: '>=0.161.0+26.2'],
+		// 26.3 is the baseline release: unchanged Minecraft, Loader and Fabric API versions.
+		'26.3'  : [family: '26.3', loader: '0.20.1', fabricApi: '0.165.2+26.3',
+		           minecraftRange: '~26.3', fabricApiRange: '*'],
+]
+
+def minecraftVersion = (findProperty('minecraft_version') ?: '26.3').toString()
+def target = minecraftTargets[minecraftVersion]
+if (target == null) {
+	throw new GradleException("Unsupported minecraft_version '${minecraftVersion}'. Supported: ${minecraftTargets.keySet().join(', ')}")
+}
+def minecraftFamily = target.family
+def loaderVersion = target.loader
+def fabricApiVersion = target.fabricApi
+def minecraftRange = target.minecraftRange
+def fabricApiRange = target.fabricApiRange
+
+version = "${project.mod_version}+mc${minecraftVersion}"
 group = project.maven_group
 
 base {
 	archivesName = project.archives_base_name
 }
 
+println "PackStudio ${project.mod_version} -> Minecraft ${minecraftVersion} (API family ${minecraftFamily}, Loader ${loaderVersion}, Fabric API ${fabricApiVersion})"
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	minecraft "com.mojang:minecraft:${minecraftVersion}"
+	implementation "net.fabricmc:fabric-loader:${loaderVersion}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
 
 	testImplementation platform('org.junit:junit-bom:5.11.4')
 	testImplementation 'org.junit.jupiter:junit-jupiter'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// Shared sources build every target; exactly one compatibility implementation is added per API family.
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java', "src/main/families/${minecraftFamily}/java"]
+		}
+	}
+	test {
+		java {
+			srcDirs = ['src/test/java', "src/testFamilies/${minecraftFamily}/java"]
+		}
+	}
+}
+
+// Build identity, consumed by the target verification task and by the JAR metadata audit.
+def generatedBuildInfo = layout.buildDirectory.dir('generated/buildInfo')
+def generateBuildInfo = tasks.register('generateBuildInfo') {
+	def outputDir = generatedBuildInfo
+	def values = [
+			mod_version         : project.mod_version.toString(),
+			minecraft_version   : minecraftVersion,
+			minecraft_family    : minecraftFamily,
+			fabric_api_version  : fabricApiVersion,
+			fabric_loader_version: loaderVersion,
+			loom_version        : project.loom_version.toString(),
+	]
+	inputs.property('buildInfo', values)
+	outputs.dir(outputDir)
+	doLast {
+		def file = outputDir.get().file('packstudio-build.properties').asFile
+		file.parentFile.mkdirs()
+		file.text = values.collect { key, value -> "${key}=${value}" }.join('\n') + '\n'
+	}
+}
+
 processResources {
 	def modVersion = project.version
-	def minecraftVersion = project.minecraft_version
-	def loaderVersion = project.loader_version
+	def minecraftVersionProperty = minecraftVersion
+	def loaderVersionProperty = loaderVersion
+	def minecraftRangeProperty = minecraftRange
+	def fabricApiRangeProperty = fabricApiRange
 
 	inputs.property 'version', modVersion
-	inputs.property 'minecraft_version', minecraftVersion
-	inputs.property 'loader_version', loaderVersion
+	inputs.property 'minecraft_version', minecraftVersionProperty
+	inputs.property 'loader_version', loaderVersionProperty
+	inputs.property 'minecraft_range', minecraftRangeProperty
+	inputs.property 'fabric_api_range', fabricApiRangeProperty
 
+	// One shared template: assets are common to every target and only the dependency bounds change,
+	// so no target can end up with a missing or duplicated fabric.mod.json.
 	filesMatching('fabric.mod.json') {
 		expand(
-			'version': modVersion,
-			'minecraft_version': minecraftVersion,
-			'loader_version': loaderVersion
+				'version': modVersion,
+				'minecraft_version': minecraftVersionProperty,
+				'loader_version': loaderVersionProperty,
+				'minecraft_range': minecraftRangeProperty,
+				'fabric_api_range': fabricApiRangeProperty
 		)
 	}
+
+	from(generateBuildInfo)
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -49,6 +126,10 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('test', Test) {
 	useJUnitPlatform()
+	testLogging {
+		events 'passed', 'skipped', 'failed'
+		exceptionFormat = 'full'
+	}
 }
 
 java {
@@ -65,6 +146,22 @@ jar {
 	from('LICENSE') {
 		rename { "${it}_${archiveName}" }
 	}
+}
+
+// Target identity is asserted by com.packstudio.build.TargetIdentityTest, which runs inside the normal
+// JUnit suite (same runtime classpath as the rest of the tests) against this target's real Minecraft
+// artifact. `check` therefore fails for a stale or mismatched target.
+
+/**
+ * Copies this target's verified jar into releases/<minecraft version>/PackStudio-<minecraft version>.jar
+ * so every supported version ships as its own, independently installable release file.
+ */
+tasks.register('collectVersionedReleases', Copy) {
+	group = 'build'
+	description = "Stages the ${minecraftVersion} jar as releases/${minecraftVersion}/PackStudio-${minecraftVersion}.jar"
+	from(tasks.named('jar'))
+	into(layout.projectDirectory.dir("releases/${minecraftVersion}"))
+	rename { "PackStudio-${minecraftVersion}.jar" }
 }
 
 publishing {

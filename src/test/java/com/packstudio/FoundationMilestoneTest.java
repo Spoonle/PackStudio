@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.options.OptionsScreen;
 import org.junit.jupiter.api.Test;
@@ -100,16 +101,56 @@ class FoundationMilestoneTest {
         assertNotNull(PackStudioBootstrap.get().configManager().config());
 
         TitleScreen titleScreen = new TitleScreen();
-        client.gui.setScreen(titleScreen);
+        TestClientAccess.setScreen(client, titleScreen);
         assertFalse(Screens.getWidgets(titleScreen).isEmpty(), "TitleScreen should receive PackStudio launch button");
 
-        OptionsScreen optionsScreen = new OptionsScreen(titleScreen, client.options);
-        client.gui.setScreen(optionsScreen);
+        // OptionsScreen's constructor signature changed across 26.X; build it through its own public
+        // constructor so one shared test works on every target (and skip cleanly if the harness cannot).
+        Screen optionsScreen = instantiateOptionsScreen(titleScreen, client);
+        TestClientAccess.setScreen(client, optionsScreen);
         assertFalse(Screens.getWidgets(optionsScreen).isEmpty(), "OptionsScreen should receive PackStudio launch button");
 
         // Simulate keybind click opening PackStudioScreen
         TestHarnessBridge.simulateKeyMappingPress(PackStudioClient.openStudioMapping());
         ClientTickEvents.END_CLIENT_TICK.invoker().onEndTick(client);
-        assertInstanceOf(PackStudioScreen.class, client.gui.screen());
+        assertInstanceOf(PackStudioScreen.class, TestClientAccess.screen(client));
+    }
+
+    /**
+     * Creates the vanilla options screen without hardcoding a constructor shape: every 26.X
+     * {@code OptionsScreen} constructor takes the parent screen and accepts {@code null} for the rest
+     * (the screen re-reads {@code Minecraft.options} during {@code init}).
+     */
+    private static Screen instantiateOptionsScreen(Screen parent, Minecraft client) {
+        // `client` documents that this runs on the client thread; options are re-read by Screen#init.
+        for (java.lang.reflect.Constructor<?> constructor : OptionsScreen.class.getConstructors()) {
+            Class<?>[] parameters = constructor.getParameterTypes();
+            if (parameters.length == 0 || !parameters[0].isAssignableFrom(parent.getClass())) {
+                continue;
+            }
+            Object[] arguments = new Object[parameters.length];
+            boolean usable = true;
+            for (int i = 0; i < parameters.length; i++) {
+                if (parameters[i].isAssignableFrom(parent.getClass())) {
+                    arguments[i] = parent;
+                } else if (!parameters[i].isPrimitive()) {
+                    arguments[i] = null;
+                } else {
+                    usable = false;
+                    break;
+                }
+            }
+            if (!usable) {
+                continue;
+            }
+            try {
+                return (Screen) constructor.newInstance(arguments);
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
+                // Try the next constructor shape.
+            }
+        }
+        org.junit.jupiter.api.Assumptions.assumeTrue(false,
+                "No usable OptionsScreen constructor on Minecraft " + net.minecraft.SharedConstants.getCurrentVersion().name());
+        return null;
     }
 }

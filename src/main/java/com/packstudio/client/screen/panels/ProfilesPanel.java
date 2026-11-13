@@ -1,6 +1,5 @@
 package com.packstudio.client.screen.panels;
 
-import com.mojang.blaze3d.Blaze3D;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.packstudio.client.screen.AdaptiveLayout.Rect;
 import com.packstudio.client.screen.components.GlassButton;
@@ -8,6 +7,7 @@ import com.packstudio.client.screen.components.GlassModalDialog;
 import com.packstudio.compatibility.ProfileValidator;
 import com.packstudio.compatibility.ProfileValidator.MissingPackNotice;
 import com.packstudio.compatibility.ProfileValidator.ProfileHealth;
+import com.packstudio.compat.MinecraftCompatProvider;
 import com.packstudio.core.PackStudioConstants;
 import com.packstudio.manager.ProfileManager;
 import com.packstudio.manager.ProfileManager.ImportOutcome;
@@ -68,7 +68,7 @@ public final class ProfilesPanel {
                     Path dir = host.bootstrap().profileManager().profilesDirectory();
                     try {
                         Files.createDirectories(dir);
-                        Blaze3D.openPath(dir);
+                        MinecraftCompatProvider.get().openDirectory(dir);
                     } catch (Exception e) {
                         PackStudioConstants.LOGGER.warn("Could not open profiles folder {}", dir, e);
                     }

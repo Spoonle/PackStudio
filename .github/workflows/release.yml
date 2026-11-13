@@ -1,14 +1,24 @@
 name: Publish Release Assets
 
+# PackStudio ships one independent release file per Minecraft version. This workflow builds and verifies a
+# single Minecraft target per run and attaches only that target's JAR to its own GitHub Release, so no release
+# ever mixes several Minecraft versions in one file set.
+
 on:
   release:
     types: [published, created]
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag to attach freshly built JAR assets to"
+        description: "Release tag to attach the JAR assets to (e.g. v1.0.0+mc26.2)"
         required: true
         default: "v1.0.0+mc26.3"
+      minecraft_version:
+        description: "Minecraft version to build (26.1, 26.1.1, 26.1.2, 26.2 or 26.3)"
+        required: true
+        default: "26.3"
+        type: choice
+        options: ["26.1", "26.1.1", "26.1.2", "26.2", "26.3"]
 
 permissions:
   contents: write
@@ -30,25 +40,65 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build genuine Fabric Loom 26.3 JARs
+      - name: Resolve the Minecraft target for this release
+        id: target
+        env:
+          INPUT_MC: ${{ github.event.inputs.minecraft_version }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
         run: |
-          ./gradlew clean build --no-daemon --stacktrace
-          cd build/libs
-          MAIN_JAR=$(ls packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
-          SOURCES_JAR=$(ls packstudio-*-sources.jar | head -n 1)
-          sha256sum "$MAIN_JAR" "$SOURCES_JAR" > SHA256SUMS.txt
+          set -euo pipefail
+          TAG="${EVENT_TAG:-${INPUT_TAG:-v1.0.0+mc26.3}}"
+          MC="${INPUT_MC:-}"
+          if [ -z "$MC" ]; then
+            # Derive the Minecraft version from the release tag, e.g. v1.0.0+mc26.1.2 -> 26.1.2
+            MC=$(printf '%s' "$TAG" | sed -n 's/.*+mc\([0-9][0-9.]*\)$/\1/p')
+          fi
+          case "$MC" in
+            26.1|26.1.1|26.1.2|26.2|26.3) ;;
+            *) echo "::error::Could not determine a supported Minecraft version (tag: $TAG). Pass minecraft_version explicitly."; exit 1 ;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "mc=$MC" >> "$GITHUB_OUTPUT"
+          case "$MC" in
+            26.3) family=26.3 ;;
+            26.2) family=26.2 ;;
+            *)    family=26.1 ;;
+          esac
+          echo "family=$family" >> "$GITHUB_OUTPUT"
+          echo "Building PackStudio for Minecraft $MC (family $family), tag $TAG"
+
+      - name: Build, test and audit the target JAR
+        env:
+          MC: ${{ steps.target.outputs.mc }}
+          FAMILY: ${{ steps.target.outputs.family }}
+        run: |
+          set -euo pipefail
+          ./gradlew clean build --no-daemon --stacktrace -Pminecraft_version="$MC"
+
+          shopt -s nullglob
+          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
+          SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar | head -n 1)
+          [ -n "$MAIN_JAR" ] || { echo "::error::No mod JAR was produced for Minecraft $MC"; exit 1; }
+
+          # Same audit the CI matrix runs, so a release can never attach a mismatched jar.
+          chmod +x tools/verify_release_jar.sh
+          tools/verify_release_jar.sh "$MAIN_JAR" "$MC" "$FAMILY"
+
+          mkdir -p dist
+          cp "$MAIN_JAR" "dist/PackStudio-$MC.jar"
+          cp "$SOURCES_JAR" "dist/PackStudio-$MC-sources.jar"
+          (cd dist && sha256sum "PackStudio-$MC.jar" "PackStudio-$MC-sources.jar" > SHA256SUMS.txt)
+          ls -l dist
 
       - name: Upload JAR & Checksum Assets to GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          INPUT_TAG: ${{ github.event.inputs.tag }}
-          EVENT_TAG: ${{ github.event.release.tag_name }}
+          TAG: ${{ steps.target.outputs.tag }}
+          MC: ${{ steps.target.outputs.mc }}
         run: |
-          TAG="${EVENT_TAG:-${INPUT_TAG:-v1.0.0+mc26.3}}"
-          MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
-          SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar | head -n 1)
-          gh release upload "$TAG" \
-            "${MAIN_JAR}#$(basename "$MAIN_JAR")" \
-            "${SOURCES_JAR}#$(basename "$SOURCES_JAR")" \
-            "build/libs/SHA256SUMS.txt#SHA256SUMS.txt" \
-            --clobber
+          set -euo pipefail
+          cp "$GITHUB_WORKSPACE/releases/$MC/CHANGELOG.md" dist/CHANGELOG.md 2>/dev/null || true
+          ASSETS=(dist/"PackStudio-$MC.jar" dist/"PackStudio-$MC-sources.jar" dist/SHA256SUMS.txt)
+          [ -f dist/CHANGELOG.md ] && ASSETS+=(dist/CHANGELOG.md)
+          gh release upload "$TAG" "${ASSETS[@]}" --clobber
