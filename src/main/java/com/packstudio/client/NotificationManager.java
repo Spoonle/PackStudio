@@ -8,7 +8,7 @@ import java.util.List;
 import net.minecraft.util.Util;
 
 /**
- * Manages clean in-screen Liquid Glass notifications as well as native Minecraft system toasts
+ * Manages clean in-screen Minimalist notifications as well as native Minecraft system toasts
  * when PackStudio is not the active screen.
  */
 public final class NotificationManager {

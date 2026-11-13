@@ -42,7 +42,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 
 /**
- * Primary Liquid Glass workspace screen for PackStudio.
+ * Primary Minimalist workspace screen for PackStudio.
  */
 public final class PackStudioScreen extends Screen implements StudioPanelHost {
     private final Screen parentScreen;
@@ -164,7 +164,7 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
         ));
         rightCursor = sortButton.getX() - 6;
 
-        // Search Field (Liquid Glass native EditBox subclass)
+        // Search Field (Minimalist native EditBox subclass)
         int brandReserve = layout.compactMode() ? 78 : 108;
         int searchX = top.x() + brandReserve;
         int searchW = Math.max(64, rightCursor - searchX);
@@ -453,7 +453,7 @@ public final class PackStudioScreen extends Screen implements StudioPanelHost {
         // Calls extractBackground(...) once and then renders all registered top/sidebar/bottom widgets
         super.extractRenderState(graphics, effectiveMouseX, effectiveMouseY, delta);
 
-        // Modal Dialog & Non-blocking Liquid Glass Notifications on top
+        // Modal Dialog & Non-blocking Minimalist Notifications on top
         PackStudioConfig cfg = bootstrap.configManager().config();
         if (activeModal != null) {
             activeModal.render(graphics, this.font, this.width, this.height, mouseX, mouseY, delta);

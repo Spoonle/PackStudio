@@ -2,7 +2,7 @@
 
 > **Your resource packs. Your presets. Your world.**
 
-Client-side **Minecraft Java Edition `26.2` (Fabric)** mod — a modern, native **Liquid Glass** resource pack
+Client-side **Minecraft Java Edition `26.2` (Fabric)** mod — a modern, native **minimalist** resource pack
 library and one-click preset manager built directly into the Minecraft client.
 
 > **This release is only for Minecraft `26.2`.** PackStudio ships one independent release per Minecraft
@@ -29,7 +29,7 @@ exact Minecraft dependency range so a mismatched install fails immediately inste
 
 1. Install **Minecraft Java Edition `26.2`** with **[Fabric Loader `0.20.1+`](https://fabricmc.net/use/installer/)** (running on **Java `25`**).
 2. Download **[Fabric API](https://modrinth.com/mod/fabric-api)** (`0.161.0+26.2` or newer) and place it in your `.minecraft/mods/` folder.
-3. Scroll down to **Assets**, download **`PackStudio-26.2.jar`**, and drop it into `.minecraft/mods/`.
+3. Scroll down to **Assets**, download **`packstudio-fabric-26.2-1.0.0.jar`**, and drop it into `.minecraft/mods/`.
 4. Launch Minecraft and press **`P`** — or click **`PackStudio`** in the top-right corner of the **Title Screen**, **Options Screen**, or **Resource Packs Screen**.
 
 > **100% Client-Side**: Works on singleplayer worlds and any multiplayer server (vanilla, Fabric, Paper, Velocity) without server installation.
@@ -44,7 +44,7 @@ exact Minecraft dependency range so a mismatched install fails immediately inste
 | **Mod Loader** | Fabric Loader `>= 0.20.1` |
 | **Required Dependency** | Fabric API `0.161.0+26.2` or newer |
 | **Java Runtime** | Java `25` |
-| **Side / Compatibility** | Client-only (`Zero Mixins`, `Zero Blur Shaders` — **Sodium** compatible) |
+| **Side / Compatibility** | Client-only (`Zero Mixins`, `Zero Shaders` — **Sodium** compatible) |
 | **API family** | `26.2` (shared codebase + one version-specific compatibility layer) |
 
 ---
@@ -73,7 +73,7 @@ exact Minecraft dependency range so a mismatched install fails immediately inste
 
 ### Version differences across the whole 26.X line
 
-Every target is the same mod: the same Liquid Glass UI, the same features, the same behaviour. Only the four
+Every target is the same mod: the same Minimalist UI, the same features, the same behaviour. Only the four
 Minecraft APIs that actually differ between 26.1 and 26.3 are implemented per API family, behind one small
 `com.packstudio.compat` seam:
 
@@ -120,9 +120,9 @@ Minecraft APIs that actually differ between 26.1 and 26.3 are implemented per AP
 - Validates the preset, applies exact priority order via `PackRepository#setSelected`, and triggers `Minecraft#reloadResourcePacks()`.
 - Confirms profile activation **strictly after reload completion** and automatically restores your previous configuration if reload fails.
 
-### Pack Inspector & Liquid Glass Settings
+### Pack Inspector & Minimalist Settings
 - Displays authentic pack descriptions, authors (strictly when declared in `pack.mcmeta`), pack formats, compatibility badges, state, and priority rank.
-- Three dark translucent themes (*Obsidian Cyan*, *Midnight Indigo*, *Frosted Emerald*), adjustable opacity (`45%`–`96%`), default view mode, smooth animation toggle, launch button toggles, and interactive SDL3 shortcut rebinding.
+- Three dark themes (*Obsidian Cyan*, *Midnight Indigo*, *Frosted Emerald*), adjustable opacity (`45%`–`96%`), default view mode, smooth animation toggle, launch button toggles, and interactive SDL3 shortcut rebinding.
 
 ### Default Controls
 - **`P`** — Open PackStudio
@@ -153,8 +153,8 @@ before relying on those.
 
 ## Attached Assets
 
-- **`PackStudio-26.2.jar`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
-- **`PackStudio-26.2-sources.jar`** — developer Java 25 sources archive
+- **`packstudio-fabric-26.2-1.0.0.jar`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
+- **`packstudio-fabric-26.2-1.0.0-sources.jar`** — developer Java 25 sources archive
 - **`SHA256SUMS.txt`** — checksum manifest for the attached files
 - **`CHANGELOG.md`** — version-specific change list
 

@@ -189,17 +189,19 @@ jobs:
             MAIN_JAR=$(ls build/libs/packstudio-*.jar | grep -v '\-sources\.jar$' | head -n 1)
             SOURCES_JAR=$(ls build/libs/packstudio-*-sources.jar | head -n 1)
             mkdir -p "releases/${version}"
-            cp "$MAIN_JAR" "releases/${version}/PackStudio-${version}.jar"
-            cp "$SOURCES_JAR" "releases/${version}/PackStudio-${version}-sources.jar"
-            (cd "releases/${version}" && sha256sum "PackStudio-${version}.jar" > SHA256SUMS.txt)
+            # Drop any earlier asset name for this version so a rename cannot leave stale files behind.
+            rm -f "releases/${version}"/PackStudio-*.jar
+            cp "$MAIN_JAR" "releases/${version}/packstudio-fabric-${version}-1.0.0.jar"
+            cp "$SOURCES_JAR" "releases/${version}/packstudio-fabric-${version}-1.0.0-sources.jar"
+            (cd "releases/${version}" && sha256sum "packstudio-fabric-${version}-1.0.0.jar" > SHA256SUMS.txt)
             case "$version" in
               26.3) family=26.3 ;;
               26.2) family=26.2 ;;
               *)    family=26.1 ;;
             esac
             chmod +x tools/verify_release_jar.sh
-            tools/verify_release_jar.sh "releases/${version}/PackStudio-${version}.jar" "$version" "$family"
-            echo "staged releases/${version}/PackStudio-${version}.jar"
+            tools/verify_release_jar.sh "releases/${version}/packstudio-fabric-${version}-1.0.0.jar" "$version" "$family"
+            echo "staged releases/${version}/packstudio-fabric-${version}-1.0.0.jar"
             echo "::endgroup::"
           done
           ls -R releases | head -60

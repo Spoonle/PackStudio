@@ -9,11 +9,11 @@ independent release file.
 
 | Target | API family | Fabric API (official) | Build | JUnit suite | Jar audit | Release file |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 26.1 | 26.1 | `0.155.3+26.1.2` | ✅ | ✅ | ✅ | `releases/26.1/PackStudio-26.1.jar` |
-| 26.1.1 | 26.1 | `0.155.3+26.1.2` | ✅ | ✅ | ✅ | `releases/26.1.1/PackStudio-26.1.1.jar` |
-| 26.1.2 | 26.1 | `0.155.3+26.1.2` | ✅ | ✅ | ✅ | `releases/26.1.2/PackStudio-26.1.2.jar` |
-| 26.2 | 26.2 | `0.161.0+26.2` | ✅ | ✅ | ✅ | `releases/26.2/PackStudio-26.2.jar` |
-| 26.3 | 26.3 | `0.165.2+26.3` | ✅ | ✅ | ✅ | `releases/26.3/PackStudio-26.3.jar` |
+| 26.1 | 26.1 | `0.155.3+26.1.2` | ✅ | ✅ | ✅ | `releases/26.1/packstudio-fabric-26.1-1.0.0.jar` |
+| 26.1.1 | 26.1 | `0.155.3+26.1.2` | ✅ | ✅ | ✅ | `releases/26.1.1/packstudio-fabric-26.1.1-1.0.0.jar` |
+| 26.1.2 | 26.1 | `0.155.3+26.1.2` | ✅ | ✅ | ✅ | `releases/26.1.2/packstudio-fabric-26.1.2-1.0.0.jar` |
+| 26.2 | 26.2 | `0.161.0+26.2` | ✅ | ✅ | ✅ | `releases/26.2/packstudio-fabric-26.2-1.0.0.jar` |
+| 26.3 | 26.3 | `0.165.2+26.3` | ✅ | ✅ | ✅ | `releases/26.3/packstudio-fabric-26.3-1.0.0.jar` |
 
 Loader `0.20.1`, Java 25, `environment: client`, one client entrypoint, no Mixins, no shaders.
 
@@ -38,7 +38,7 @@ The 26.3 baseline keeps `minecraft: ~26.3` and `fabric-api: "*"`, exactly as it 
 | `managedIoExecutorRunsOffCallerThreadOnDaemonWorker` | icon/metadata work never blocks the render thread |
 | `discoversRealZipAndFolderPacksAndAppliesOrRollsBackReloads` | real ZIP/folder discovery, apply, rollback |
 | `profileCrudImportExportMissingPackAndTransactionalSwitching` | full profile lifecycle + missing-pack handling |
-| `liquidGlassComponentsRenderAndHandleInputCleanly` | widget render + input dispatch without exceptions |
+| `minimalistComponentsRenderAndHandleInputCleanly` | widget render + input dispatch without exceptions |
 | `adaptiveLayoutNeverOverlapsAcrossGuiScales` | layout across GUI scales |
 | `fullScreenRendersAllTabsViewsAndPersistsSettings` | all tabs/views render, settings persist |
 | `clientEntrypointInitializesAndRegistersScreens` | entrypoint registration, screen construction |
@@ -55,13 +55,13 @@ The 26.3 baseline keeps `minecraft: ~26.3` and `fabric-api: "*"`, exactly as it 
 
 These cannot run headlessly and are **not** claimed as verified:
 
-1. GPU rendering: Liquid Glass panels, texture upload, real window sizes / GUI scales.
+1. GPU rendering: Minimalist panels, texture upload, real window sizes / GUI scales.
 2. Live resource-pack reload of a running game and the visual result.
 3. Real key capture through SDL (P / O bindings, Controls screen rebinding).
 4. OS folder opening and native system toasts.
 
 Manual smoke test per target: install that Minecraft version + Fabric Loader `0.20.1` + the matching Fabric API
-build + the matching `PackStudio-<version>.jar`, then press `P`, switch tabs/views, apply a pack change, create
+build + the matching `packstudio-fabric-<version>-1.0.0.jar`, then press `P`, switch tabs/views, apply a pack change, create
 and apply a profile, and press `O`.
 
 ## Two defects this verification found and fixed

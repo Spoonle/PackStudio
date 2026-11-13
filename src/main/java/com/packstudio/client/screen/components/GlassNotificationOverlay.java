@@ -12,7 +12,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Util;
 
 /**
- * Renders non-blocking Liquid Glass notification cards in the top-right corner of PackStudio.
+ * Renders non-blocking Minimalist notification cards in the top-right corner of PackStudio.
  */
 public final class GlassNotificationOverlay {
     private GlassNotificationOverlay() {

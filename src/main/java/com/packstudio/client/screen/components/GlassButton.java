@@ -13,7 +13,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
 /**
- * Custom Liquid Glass button supporting Default, Primary Accent, Danger, and Subtle Pill variants.
+ * Custom Minimalist button supporting Default, Primary Accent, Danger, and Subtle Pill variants.
  */
 public final class GlassButton extends Button {
     public enum Variant {
