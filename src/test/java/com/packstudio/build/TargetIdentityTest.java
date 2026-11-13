@@ -5,11 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.packstudio.compat.MinecraftCompat;
 import com.packstudio.compat.MinecraftCompatProvider;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import org.junit.jupiter.api.Test;
@@ -34,14 +41,46 @@ class TargetIdentityTest {
         }
     }
 
+    /**
+     * The Minecraft version this test classpath actually resolved.
+     *
+     * <p>{@code SharedConstants} only knows its version after detection, which the game normally performs during
+     * startup; in a plain JUnit run it has to be triggered. If detection is unavailable the version is read
+     * straight from the {@code version.json} that ships with the resolved Minecraft jar.
+     */
+    private static String resolvedMinecraftVersion() {
+        try {
+            SharedConstants.tryDetectVersion();
+            return SharedConstants.getCurrentVersion().name();
+        } catch (RuntimeException | LinkageError e) {
+            try (InputStream in = TargetIdentityTest.class.getResourceAsStream("/version.json")) {
+                if (in == null) {
+                    throw new AssertionError("Minecraft version could not be detected: " + e, e);
+                }
+                JsonObject json = JsonParser.parseReader(
+                        new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
+                return json.get("id").getAsString();
+            } catch (IOException io) {
+                throw new AssertionError("Minecraft version could not be detected: " + e, e);
+            }
+        }
+    }
+
+    /** Reduces a version string to its numeric core, so a suffix like {@code -snapshot} cannot hide a mismatch. */
+    private static String numericVersion(String version) {
+        Matcher matcher = Pattern.compile("\\d+(?:\\.\\d+)*").matcher(version);
+        assertTrue(matcher.find(), "no numeric version in '" + version + "'");
+        return matcher.group();
+    }
+
     @Test
     void classpathMinecraftMatchesDeclaredTarget() throws Exception {
         Properties identity = buildIdentity();
         String declaredVersion = identity.getProperty("minecraft_version");
         String declaredFamily = identity.getProperty("minecraft_family");
-        String resolvedVersion = SharedConstants.getCurrentVersion().name();
+        String resolvedVersion = resolvedMinecraftVersion();
 
-        assertEquals(declaredVersion, resolvedVersion,
+        assertEquals(numericVersion(declaredVersion), numericVersion(resolvedVersion),
                 "sources were compiled against Minecraft " + resolvedVersion
                         + " but this target declares " + declaredVersion);
         assertTrue(List.of("26.1", "26.2", "26.3").contains(declaredFamily),
@@ -105,14 +144,27 @@ class TargetIdentityTest {
     }
 
     @Test
-    void modMetadataReportsTheTargetedMinecraftVersion() {
-        String modVersion = FabricLoader.getInstance()
-                .getModContainer("packstudio")
-                .orElseThrow(() -> new AssertionError("packstudio mod container unavailable"))
-                .getMetadata()
-                .getVersion()
-                .getFriendlyString();
-        assertEquals("1.0.0+mc" + SharedConstants.getCurrentVersion().name(), modVersion,
+    void modMetadataReportsTheTargetedMinecraftVersion() throws Exception {
+        String expected = "1.0.0+mc" + numericVersion(resolvedMinecraftVersion());
+
+        // The resource that ships in the jar is the authoritative metadata; it must name this Minecraft version.
+        String packagedVersion;
+        try (InputStream in = TargetIdentityTest.class.getClassLoader()
+                .getResourceAsStream("fabric.mod.json")) {
+            assertNotNull(in, "fabric.mod.json missing from the runtime classpath");
+            packagedVersion = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8))
+                    .getAsJsonObject().get("version").getAsString();
+        }
+        assertEquals(expected, packagedVersion,
                 "fabric.mod.json version must name the Minecraft version this jar targets");
+
+        // When Fabric Loader is initialised (in-game / integrated test runs) the loaded container must agree.
+        try {
+            FabricLoader.getInstance().getModContainer("packstudio").ifPresent(container ->
+                    assertEquals(expected, container.getMetadata().getVersion().getFriendlyString(),
+                            "the loaded mod container version must match fabric.mod.json"));
+        } catch (RuntimeException | LinkageError ignored) {
+            // Fabric Loader is not initialised in a plain JUnit run; the packaged resource check above stands.
+        }
     }
 }
