@@ -12,6 +12,8 @@ EXPECTED_FAMILY="${3:?expected api family required}"
 
 fail() {
   echo "JAR AUDIT FAILED: $*"
+  # Emitted as an error matcher so the reason survives on the step even when logs are unavailable.
+  echo "::error title=JarAudit(${EXPECTED_MC} ${EXPECTED_FAMILY})::$*"
   exit 1
 }
 
