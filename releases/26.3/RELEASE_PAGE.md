@@ -153,13 +153,13 @@ before relying on those.
 
 ## Attached Assets
 
-- **`packstudio-1.0.0+mc26.3.jar`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
-  - `58fd11ccb81b7d2fb3463ca29267acd45eb9141532a40bc43f4d0b2676442332`
-- **`packstudio-1.0.0+mc26.3-sources.jar`** — developer Java 25 sources archive
-  - `59bf595dc6f66fd356ceae0d82a585c8a63316f71af210a3cfa8ac624081a019`
+- **`PackStudio-26.3.jar`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
+- **`PackStudio-26.3-sources.jar`** — developer Java 25 sources archive
 - **`SHA256SUMS.txt`** — checksum manifest for the attached files
+- **`CHANGELOG.md`** — version-specific change list
 
-> This release page keeps its original `1.0.0+mc26.3` asset names and checksums unchanged.
+> Asset names are uniform across all five releases (`PackStudio-<minecraft>.jar`). This supersedes the earlier
+> `packstudio-1.0.0+mc26.3.jar` asset, which was byte-for-byte the same mod but named differently.
 
 ---
 

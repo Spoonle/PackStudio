@@ -257,6 +257,7 @@ before relying on those.
 - **`{jar}`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
 - **`{sources}`** — developer Java 25 sources archive
 - **`SHA256SUMS.txt`** — checksum manifest for the attached files
+- **`CHANGELOG.md`** — version-specific change list
 
 ---
 

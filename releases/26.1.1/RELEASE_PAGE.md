@@ -155,6 +155,7 @@ before relying on those.
 - **`PackStudio-26.1.1.jar`** — playable client mod JAR *(drop into `.minecraft/mods/`)*
 - **`PackStudio-26.1.1-sources.jar`** — developer Java 25 sources archive
 - **`SHA256SUMS.txt`** — checksum manifest for the attached files
+- **`CHANGELOG.md`** — version-specific change list
 
 ---
 
