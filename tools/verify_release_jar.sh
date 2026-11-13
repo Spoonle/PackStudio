@@ -26,9 +26,9 @@ unzip -p "$JAR" packstudio-build.properties > "$WORKDIR/build.properties" 2>/dev
   || fail "packstudio-build.properties missing from jar"
 
 # 1. Mod metadata must target exactly this Minecraft version and remain client-only on Java 25.
-python3 - "$WORKDIR/fabric.mod.json" "$EXPECTED_MC" <<'PY'
+python3 - "$WORKDIR/fabric.mod.json" "$EXPECTED_MC" "$EXPECTED_FAMILY" <<'PY'
 import json, sys
-meta_path, expected = sys.argv[1], sys.argv[2]
+meta_path, expected, family = sys.argv[1], sys.argv[2], sys.argv[3]
 meta = json.load(open(meta_path))
 version = meta['version']
 if f'mc{expected}' not in version:
@@ -40,10 +40,15 @@ if meta.get('environment') != 'client':
     sys.exit('mod is not client-only')
 if meta['depends'].get('java') != '>=25':
     sys.exit('java requirement is not >=25')
-if meta['depends'].get('fabric-api', '*') == '*':
-    sys.exit('fabric-api requirement has no lower bound')
-print(f"fabric.mod.json OK: version={version} minecraft={range_expr} "
-      f"fabric-api={meta['depends']['fabric-api']} java={meta['depends']['java']}")
+fabric_api = meta['depends'].get('fabric-api')
+if fabric_api is None:
+    sys.exit('fabric-api dependency missing')
+# The untouched 26.3 baseline release declares an unversioned Fabric API requirement; every target
+# built from a per-version template must pin a real lower bound.
+if fabric_api == '*' and family != '26.3':
+    sys.exit(f'fabric-api requirement has no lower bound for the {family} family')
+print(f"fabric.mod.json OK: version={version} minecraft={range_expr} fabric-api={fabric_api} "
+      f"java={meta['depends']['java']}")
 PY
 
 # 2. The packaged classes must include the entrypoint and exactly this build's compatibility layer.
