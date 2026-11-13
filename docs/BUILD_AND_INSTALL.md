@@ -3,15 +3,17 @@
 ## Player Installation Instructions
 
 ### Requirements
-PackStudio ships **one independent JAR per Minecraft version**. Download only the JAR that matches yours.
 
-| Minecraft | JAR | Fabric API | Java | Fabric Loader |
-| :--- | :--- | :--- | :--- | :--- |
-| `26.1` | `releases/26.1/PackStudio-26.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
-| `26.1.1` | `releases/26.1.1/PackStudio-26.1.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
-| `26.1.2` | `releases/26.1.2/PackStudio-26.1.2.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
-| `26.2` | `releases/26.2/PackStudio-26.2.jar` | `0.161.0+26.2` | 25 | `>= 0.20.1` |
-| `26.3` | `releases/26.3/PackStudio-26.3.jar` | `0.165.2+26.3` | 25 | `>= 0.20.1` |
+Download everything from the **[Releases page](https://github.com/Spoonle/PackStudio/releases)** — PackStudio ships
+**one independent release per Minecraft version**, so open the release that matches your game.
+
+| Minecraft | Release | JAR | Fabric API | Java | Fabric Loader |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `26.1` | `v1.0.0+mc26.1` | `PackStudio-26.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.1.1` | `v1.0.0+mc26.1.1` | `PackStudio-26.1.1.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.1.2` | `v1.0.0+mc26.1.2` | `PackStudio-26.1.2.jar` | `0.155.3+26.1.2` | 25 | `>= 0.20.1` |
+| `26.2` | `v1.0.0+mc26.2` | `PackStudio-26.2.jar` | `0.161.0+26.2` | 25 | `>= 0.20.1` |
+| `26.3` | `v1.0.0+mc26.3` | `PackStudio-26.3.jar` | `0.165.2+26.3` | 25 | `>= 0.20.1` |
 
 Every JAR declares an exact Minecraft dependency range, so a mismatched install fails fast with a clear message
 instead of misbehaving in game.
@@ -19,7 +21,7 @@ instead of misbehaving in game.
 ### Step-by-Step Setup
 1. Install **Fabric Loader `0.20.1+`** for your Minecraft version (`26.1` … `26.3`) in your launcher (Official Launcher, Prism Launcher, Modrinth App, or CurseForge App).
 2. Download **Fabric API** for the same version and place its `.jar` inside your instance's `mods/` directory.
-3. Copy the matching `PackStudio-<version>.jar` into the same `mods/` directory.
+3. Download the matching `PackStudio-<version>.jar` from that version's release and copy it into the same `mods/` directory.
 4. Start that Minecraft version.
 5. Open PackStudio at any time by:
    - Pressing **`P`** (in-game or in menus, rebindable in Settings or Minecraft Controls), or
@@ -50,8 +52,8 @@ Output artifacts:
 - `build/libs/packstudio-1.0.0+mc<version>.jar` — ready-to-distribute Fabric mod JAR
 - `build/libs/packstudio-1.0.0+mc<version>-sources.jar` — sources archive
 
-Verified per-version release files are committed to `releases/<version>/PackStudio-<version>.jar` by CI after
-each target passes its build, tests and jar audit.
+Verified per-version release files are staged in `releases/<version>/` by CI after each target passes its build,
+tests and jar audit, and are published as assets on the matching [release](https://github.com/Spoonle/PackStudio/releases).
 
 ### Building All Five Release Files
 ```bash
@@ -87,7 +89,7 @@ different Minecraft version than the one the build targets.
 ### What the automated suite cannot verify
 Interactive behaviour needs a real Minecraft client and is **not** covered: GPU rendering, texture upload,
 live resource-pack reloads, real SDL key capture, OS folder dialogs and native toasts. Perform the manual smoke
-test listed in [`releases/RELEASE_NOTES_26X.md`](../releases/RELEASE_NOTES_26X.md) before publishing a release.
+test listed in [`docs/VERIFICATION_26X.md`](VERIFICATION_26X.md) before publishing a release.
 
 ---
 

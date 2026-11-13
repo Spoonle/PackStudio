@@ -1,3 +1,6 @@
+<!-- GitHub Releases are published per Minecraft version from releases/<version>/RELEASE_PAGE.md.
+     Regenerate every page body with: python3 tools/render_release_notes.py -->
+
 # PackStudio 1.0.0 — Minecraft 26.X release set
 
 Five **independent** release files, one per supported Minecraft version. Download only the JAR that matches
