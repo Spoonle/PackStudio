@@ -158,8 +158,8 @@ before relying on those.
 - **`SHA256SUMS.txt`** — checksum manifest for the attached files
 - **`CHANGELOG.md`** — version-specific change list
 
-> Assets use the uniform `packstudio-fabric-<minecraft>-<mod version>` naming on all five releases. Earlier asset
-> names on this page (`packstudio-1.0.0+mc26.3.jar`, `PackStudio-26.3.jar`) referred to the same mod build.
+> Assets use the uniform `packstudio-fabric-<minecraft>-<mod version>` naming on all five releases. Earlier
+> asset filenames on this page referred to the same mod build — only the naming changed, never the mod.
 
 ---
 
